@@ -1,0 +1,1634 @@
+// This Pine Script™ code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © lame_khan369
+// Refactor +
+//@version=5
+indicator("TheLameFactory V1.9",
+         shorttitle="TLF 1.9",
+         overlay=false,
+         format=format.price,
+         max_bars_back= 1000,
+         dynamic_requests= true)
+        //  timeframe="",
+        //  timeframe_gaps = true)
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+//§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§       Universal       §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░{           {Universal Variables}
+//-----------------------------------------------------------------------------
+//          Setting         --  Groups, Tooltips, Colors, Display   --
+//-----------------------------------------------------------------------------{                                                    {Setting}
+//////////////////////////////////////////////// Groups             ////////////////////////////////////////////////////{
+UniGp           =   "███🌎Universal Setting🌎███"                                 //Universal Setting
+loPFGp          =   "Long Price Range -- Range Start -- Range End"                          //Long Price Range
+SoPFGp          =   "Short Price Range -- Range Start -- Range End"                         //Short Price Range
+DGp             =   "                --- 📺  Display  📺 ---"                               //Display
+SigGp           =   "                --- 🚥 Signal Display  🚥 ---"                         //Display
+brcolGP         =   "                📊  Bar Display  📊"                                   //Display
+brCcolGP        =   "Custom Bar Color 👨‍🎨"                                                   //Display
+bgcolGP         =   "            🌁  Background Display  🌁"                                //Display
+bgCcolGP        =   "Custom Background Color 👨‍🎨"                                            //Display
+lnPlotGp        =   "  📉  Line Display Setting  --  Bull  --  Bear  --  Custom  📈"        //Display
+lnCcolGP        =   "Custom Line Color 👨‍🎨"                                                  //Display
+bBGp            =   "                --- 🐻  Confirmations  🐂 ---"                         //Confirmations
+TMGp            =   " ✅ Trend Magic Multi TF -- Source[CCI - UpT - DownT]"                 //Trend Magic
+TMTFCGp         =   "TM TFC -- CCI Period -- ATR Period --ATR Multiplier"                   //Trend Magic
+TMaltGp         =   "TM Alt -- Res -- CCI Period -- ATR Period --ATR Multiplier"            //Trend Magic
+TMTF1Gp         =   "TM TF1 -- TF -- CCI Period -- ATR Period --ATR Multiplier"             //Trend Magic
+TMTF2Gp         =   "TM TF2 -- TF -- CCI Period -- ATR Period --ATR Multiplier"             //Trend Magic
+BBMGp           =   " ✅ BB Magic -- Source -- Length -- Multiplier--Diff?"                 //BB Magic
+BBMaltGp        =   "BB Magic Alt -- Res -- Length -- Multiplier--Diff?"                    //BB Magic
+SCLGP           =   " ✅ Scalping Line Multi TF -- Source"                                  //Scalping Line
+SCLTFCGP        =   "SCL TFC -- Percent -- Main Period -- Signal Period"                    //Scalping Line
+SCLAltGP        =   "SCL Alt -- Alternate Resolution"                                       //Scalping Line
+SCLTF1GP        =   "SCL TF1 -- Timeframe"                                                  //Scalping Line
+MAGp            =   " ✅ MA Confirmation -- Source"                                         //MA
+MAOCCG          =   "Open/Close/Cross MA Strategy -- Diff?"                                 //O.C.C
+MACGp           =   "Corrected MA [Cross-Diff]-- Length -- Threshold"                       //C.MA
+MAfltrGp        =   "MA filter -- Length -- Extreme?"                                       //MA Filter
+MADfGp          =   "MA Diff"                                                               //MA Df
+CEGp            =   " ✅ Chandelier Exit -- ATR [period, Multi] -- close?"                  //Chandelier Exit
+RsiGp           =   " ✅ RSI -- Source -- period -- Overbought -- OverSold"                 //RSI
+VwapGp          =   " ✅ VWAP -- Source --Anchor -- stdevMulti"                             //VWAP
+AdxGp           =   " ✅ ADX Threshold--Diff--Length--Smooth--Thre"                       //ADX
+//}
+//////////////////////////////////////////////// Tooltips           ////////////////////////////////////////////////////{
+BubeT           =   "Enable Bull/Bear Condition"
+TFT             =   "Choose Timeframe"
+MAtypeT         =   "Choose MA type"
+SCLsrcT         =   "Universal Scalping Line source" 
+SCLcrossuseT    =   "Enable Scaliping Line Crossover/Crossunder Confirmation"
+SCLrangeuseT    =   "Enable Scaliping Line Range Confirmation"
+SCLT            =   "Larger %: more sensitive to price deviations from the moving average (MA), more Signals
+                     \nSmaller Main period: more sensitive to price deviations, more Signals\n
+                     Smaller Signal period: more sensitive to price deviations, more Signals"
+PWMApT          =   "Power value\nOnly applicable for PWMA MA type"
+MAsrcT          =   "MA universal source\nHas no impact on Open/Close/Cross Strategy"
+MAfltlxtT       =   "Use High and Low for Filter instead of Close price"
+ceuseclT        =   "Use Close price Extremums"
+//}
+//////////////////////////////////////////////// Colors             ////////////////////////////////////////////////////{
+green           = color.green
+red             = color.red
+gray            = color.gray
+white           = color.white   
+blue            = color.blue
+green100        = #008000FF
+lime100         = #00FF00FF
+red100          = #FF0000FF
+aqua100         = #00FFFFFF
+darkred100      = #8B0000FF
+gray100         = #808080FF
+//}
+//////////////////////////////////////////////// Display Formats    ////////////////////////////////////////////////////{
+dw_Y            =   display.data_window
+dw_N            =   display.all - display.data_window
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          T&P Filter      --  Time & Price Filters                --
+//-----------------------------------------------------------------------------{                                                    {Time & Price}
+//Time Filter
+tFltruse        = input.bool(false,                                  "",            inline = "TFltr",   group = UniGp)
+tFltrID         = input.time(timestamp("2024-10-5 10:09:03 +0300"),"   Time ⏯️",    inline = "TFltr",   group = UniGp)
+tFltr           = tFltruse == true ? time >= tFltrID : true
+//Long Price Range
+rLouse          = input.bool(false,                                  "",            inline = "LoPR",    group = loPFGp)
+rLoP1           = input.price(522,                                   "   Start",    inline = "LoPR",    group = loPFGp)
+rLoP2           = input.price(520,                                   "   End",      inline = "LoPR",    group = loPFGp)
+longInRange     = rLouse == true ? low >= rLoP2 and low <= rLoP1 : true
+//Short Price Range
+rSouse          = input.bool(false,                                  "",            inline = "SoPR",    group = SoPFGp)
+rSoP1           = input.price(560,                                   "   Start",    inline = "SoPR",    group = SoPFGp)
+rSoP2           = input.price(580,                                   "   End",      inline = "SoPR",    group = SoPFGp)
+shortInRange     = rSouse == true ? high >= rSoP1 and high <= rSoP2 : true
+//-----------------------------------------------------------------------------}        
+//-----------------------------------------------------------------------------
+//          Display         --  Display Conditions                  --
+//-----------------------------------------------------------------------------{                                                    {Display setting inputs}
+///////////////////////// Signal Display            ////////////////////////////////////////////////////////////////////{
+//Buy/Sell Display
+_dBS            = input.bool(false,         "Show Buy/Sell Signals",            inline = "bs1",         group = DGp)
+bullcol         = input.color(lime100,      "",                                 inline = "bs1",         group = DGp)
+bearcol         = input.color(red100,       "",                                 inline = "bs1",         group = DGp)
+//}
+///////////////////////// Signal Plots            ////////////////////////////////////////////////////////////////////{
+//Signal Overlay False Display
+_Sig_BuBe        = input.bool(true,         "Bull-Bear",                        inline = "1",          group = SigGp)
+_Sig_TM_TFC      = input.bool(true,         "TM-TFC",                           inline = "1",          group = SigGp)
+_Sig_TM_Alt      = input.bool(true,         "TM-Alt",                           inline = "1",          group = SigGp)
+_Sig_TM_TF1      = input.bool(true,         "TM-TF1",                           inline = "1",          group = SigGp)
+_Sig_TM_TF2      = input.bool(true,         "TM-TF2",                           inline = "1",          group = SigGp)
+_Sig_BBM         = input.bool(true,         "BBM",                              inline = "1",          group = SigGp)
+_Sig_BBM_Alt     = input.bool(true,         "BBM_Alt",                          inline = "1",          group = SigGp)
+_Sig_SLC_TFC     = input.bool(true,         "SCL-TFC",                          inline = "1",          group = SigGp)
+_Sig_SLC_Alt     = input.bool(true,         "SCL-Alt",                          inline = "1",          group = SigGp)
+_Sig_SLC_TF1     = input.bool(true,         "SCLL-TF1",                         inline = "1",          group = SigGp)
+_Sig_MA_OCCrng   = input.bool(true,         "MA.OCC_Range",                     inline = "1",          group = SigGp)
+_Sig_MA_OCCDf    = input.bool(true,         "MA.OCC_Diff",                      inline = "1",          group = SigGp)
+_Sig_CMA_Crs     = input.bool(true,         "CMA.Crs",                          inline = "1",          group = SigGp)
+_Sig_CMA_Df      = input.bool(true,         "CMA.Diff",                         inline = "1",          group = SigGp)
+_Sig_MA_fltr     = input.bool(true,         "MA.Filter",                        inline = "1",          group = SigGp)
+_Sig_MA_Df       = input.bool(true,         "MA.Diff",                          inline = "1",          group = SigGp)
+_Sig_CE_rng      = input.bool(true,         "C.E",                              inline = "1",          group = SigGp)
+_Sig_RSI         = input.bool(true,         "RSI",                              inline = "1",          group = SigGp)
+_Sig_VWAP        = input.bool(true,         "VWAP",                             inline = "1",          group = SigGp)
+_Sig_ADX_thr     = input.bool(true,         "ADX.Thr",                          inline = "1",          group = SigGp)
+_Sig_ADX_Df      = input.bool(true,         "ADX.Diff",                         inline = "1",          group = SigGp)
+//}
+///////////////////////// Bar Color Display         ////////////////////////////////////////////////////////////////////{
+brcoluse        = input.bool(false,         "Color Bars with Signals",          inline = "b1",          group = brcolGP)
+brbullcol       = input.color(lime100,      "",                                 inline = "b1",          group = brcolGP)
+brbearcol       = input.color(red100,       "",                                 inline = "b1",          group = brcolGP)
+//User input to choose signals to efect colors for bar Color
+_bC_BuBe        = input.bool(false,         "Bull-Bear",                        inline = "1",           group = brCcolGP)
+_bC_TM_TFC      = input.bool(false,         "TM-TFC",                           inline = "1",           group = brCcolGP)
+_bC_TM_Alt      = input.bool(false,         "TM-Alt",                           inline = "1",           group = brCcolGP)
+_bC_TM_TF1      = input.bool(false,         "TM-TF1",                           inline = "1",           group = brCcolGP)
+_bC_TM_TF2      = input.bool(false,         "TM-TF2",                           inline = "1",           group = brCcolGP)
+_bC_BBM         = input.bool(false,         "BBM",                              inline = "1",           group = brCcolGP)
+_bC_BBM_Alt     = input.bool(false,         "BBM_Alt",                          inline = "1",           group = brCcolGP)
+_bC_SLC_TFC     = input.bool(false,         "SCL-TFC",                          inline = "1",           group = brCcolGP)
+_bC_SLC_Alt     = input.bool(false,         "SCL-Alt",                          inline = "1",           group = brCcolGP)
+_bC_SLC_TF1     = input.bool(false,         "SCLL-TF1",                         inline = "1",           group = brCcolGP)
+_bC_MA_OCCrng   = input.bool(false,         "MA.OCC_Range",                     inline = "1",           group = brCcolGP)
+_bC_MA_OCCDf    = input.bool(false,         "MA.OCC_Diff",                      inline = "1",           group = brCcolGP)
+_bC_CMA_Crs     = input.bool(false,         "CMA.Crs",                          inline = "1",           group = brCcolGP)
+_bC_CMA_Df      = input.bool(false,         "CMA.Diff",                         inline = "1",           group = brCcolGP)
+_bC_MA_fltr     = input.bool(false,         "MA.Filter",                        inline = "1",           group = brCcolGP)
+_bC_MA_Df       = input.bool(false,         "MA.Diff",                          inline = "1",           group = brCcolGP)
+_bC_CE_rng      = input.bool(false,         "C.E",                              inline = "1",           group = brCcolGP)
+_bC_RSI         = input.bool(false,         "RSI",                              inline = "1",           group = brCcolGP)
+_bC_VWAP        = input.bool(false,         "VWAP",                             inline = "1",           group = brCcolGP)
+_bC_ADX_thr     = input.bool(false,         "ADX.Thr",                          inline = "1",           group = brCcolGP)
+_bC_ADX_Df      = input.bool(false,         "ADX.Diff",                         inline = "1",           group = brCcolGP)
+//}
+///////////////////////// Background Color Display  ////////////////////////////////////////////////////////////////////{
+bgcoluse        = input.bool(false,         "Color Background with Signals",    inline = "b1",          group = bgcolGP)
+bgbullcolID     = input.color(lime100,      "",                                 inline = "b1",          group = bgcolGP)
+bgbearcolID     = input.color(red100,       "",                                 inline = "b1",          group = bgcolGP)
+bgtrans         = input.int(96,             "Transp.",                          inline = "b1",          group = bgcolGP)
+bgbullcol       = color.new(bgbullcolID,bgtrans)
+bgbearcol       = color.new(bgbearcolID,bgtrans)
+bgNANcol        = color.new(gray100,bgtrans)
+//User input to choose signals to efect colors for Background Color
+_bgC_BuBe       = input.bool(false,         "Bull-Bear",                        inline = "1",           group = bgCcolGP)
+_bgC_TM_TFC     = input.bool(false,         "TM-TFC",                           inline = "1",           group = bgCcolGP)
+_bgC_TM_Alt     = input.bool(false,         "TM-Alt",                           inline = "1",           group = bgCcolGP)
+_bgC_TM_TF1     = input.bool(false,         "TM-TF1",                           inline = "1",           group = bgCcolGP)
+_bgC_TM_TF2     = input.bool(false,         "TM-TF2",                           inline = "1",           group = bgCcolGP)
+_bgC_BBM        = input.bool(false,         "BBM",                              inline = "1",           group = bgCcolGP)
+_bgC_BBM_Alt    = input.bool(false,         "BBM_Alt",                          inline = "1",           group = bgCcolGP)
+_bgC_SLC_TFC    = input.bool(false,         "SCL-TFC",                          inline = "1",           group = bgCcolGP)
+_bgC_SLC_Alt    = input.bool(false,         "SCL-Alt",                          inline = "1",           group = bgCcolGP)
+_bgC_SLC_TF1    = input.bool(false,         "SCLL-TF1",                         inline = "1",           group = bgCcolGP)
+_bgC_MA_OCCrng  = input.bool(false,         "MA.OCC_Range",                     inline = "1",           group = bgCcolGP)
+_bgC_MA_OCCDf   = input.bool(false,         "MA.OCC_Diff",                      inline = "1",           group = bgCcolGP)
+_bgC_CMA_Crs    = input.bool(false,         "CMA.Crs",                          inline = "1",           group = bgCcolGP)
+_bgC_CMA_Df     = input.bool(false,         "CMA.Diff",                         inline = "1",           group = bgCcolGP)
+_bgC_MA_fltr    = input.bool(false,         "MA.Filter",                        inline = "1",           group = bgCcolGP)
+_bgC_MA_Df      = input.bool(false,         "MA.Diff",                          inline = "1",           group = bgCcolGP)
+_bgC_CE_rng     = input.bool(false,         "C.E",                              inline = "1",           group = bgCcolGP)
+_bgC_RSI        = input.bool(false,         "RSI",                              inline = "1",           group = bgCcolGP)
+_bgC_VWAP       = input.bool(false,         "VWAP",                             inline = "1",           group = bgCcolGP)
+_bgC_ADX_thr    = input.bool(false,         "ADX.Thr",                          inline = "1",           group = bgCcolGP)
+_bgC_ADX_Df     = input.bool(false,         "ADX.Difff",                        inline = "1",           group = bgCcolGP)
+//}
+///////////////////////// Line Plot Display         ////////////////////////////////////////////////////////////////////{
+//T.M Plot inputs
+TMTFCP          = input.bool(false,         "Trend Magic - TFC",                inline = "TMtfc",       group = lnPlotGp)
+TMtfcbullcol    = input.color(lime100,      "",                                 inline = "TMtfc",       group = lnPlotGp)
+TMtfcbearcol    = input.color(red100,       "",                                 inline = "TMtfc",       group = lnPlotGp)
+TMtfccuscol     = input.bool(false,         "Custom Color",                     inline = "TMtfc",       group = lnPlotGp)
+//BBM Plot inputs
+BBMP            = input.bool(false,         "B.B Magic    ",                    inline = "BBM",         group = lnPlotGp)
+bbmbullcol      = input.color(lime100,      "",                                 inline = "BBM",         group = lnPlotGp)
+bbmbearcol      = input.color(red100,       "",                                 inline = "BBM",         group = lnPlotGp)
+bbmcuscol       = input.bool(false,         "Custom Color",                     inline = "BBM",         group = lnPlotGp)
+//MA Plot inputs
+MAOCCP          = input.bool(false,         "MA - OCC    ",                     inline = "MAOCC",       group = lnPlotGp)
+MAOCCbullcol    = input.color(lime100,      "",                                 inline = "MAOCC",       group = lnPlotGp)
+MAOCCbearcol    = input.color(red100,       "",                                 inline = "MAOCC",       group = lnPlotGp)
+MAOCCcuscol     = input.bool(false,         "Custom Color",                     inline = "MAOCC",       group = lnPlotGp)
+MACOP           = input.bool(false,         "MA - Corrected  ",                 inline = "MAC",         group = lnPlotGp)
+MACObullcol     = input.color(lime100,      "",                                 inline = "MAC",         group = lnPlotGp)
+MACObearcol     = input.color(red100,       "",                                 inline = "MAC",         group = lnPlotGp)
+MACOcuscol      = input.bool(false,         "Custom Color",                     inline = "MAC",         group = lnPlotGp)
+MAfltrP         = input.bool(false,         "MA - Filter   ",                   inline = "MAF",         group = lnPlotGp)
+MAfltrbullcol   = input.color(lime100,      " ",                                inline = "MAF",         group = lnPlotGp)
+MAfltrbearcol   = input.color(red100,       "",                                 inline = "MAF",         group = lnPlotGp)
+MAfltrcuscol    = input.bool(false,         "Custom Color",                     inline = "MAF",         group = lnPlotGp)
+MADfP           = input.bool(false,         "MA - Diff   ",                     inline = "MAD",         group = lnPlotGp)
+MADfbullcol     = input.color(lime100,      "  ",                               inline = "MAD",         group = lnPlotGp)
+MADfbearcol     = input.color(red100,       "",                                 inline = "MAD",         group = lnPlotGp)
+MADfcuscol      = input.bool(false,         "Custom Color",                     inline = "MAD",         group = lnPlotGp)
+//Chandelier Exit Plot inputs
+ceP             = input.bool(false,         "Chandelier Exit ",                 inline = "CE",          group = lnPlotGp)
+cebullcol       = input.color(lime100,      " ",                                inline = "CE",          group = lnPlotGp)
+cebearcol       = input.color(red100,       "",                                 inline = "CE",          group = lnPlotGp)
+cecuscol        = input.bool(false,         "Custom Color",                     inline = "CE",          group = lnPlotGp)
+//
+VWAPP           = input.bool(false,         "VWAP     ",                        inline = "VWAP",        group = lnPlotGp)
+vwapbullcol     = input.color(lime100,      " ",                                inline = "VWAP",        group = lnPlotGp)
+vwapbearcol     = input.color(red100,       "",                                 inline = "VWAP",        group = lnPlotGp)
+vwapcuscol      = input.bool(false,         "Custom Color",                     inline = "VWAP",        group = lnPlotGp)
+//User input to choose signals to efect colors for Line Plots
+lnbullcol       = input.color(lime100,      "",                                 inline = "b1",          group = lnCcolGP)
+lnbearcol       = input.color(red100,       "",                                 inline = "b1",          group = lnCcolGP)
+_C_BuBe         = input.bool(false,         "Bull-Bear",                        inline = "1",           group = lnCcolGP)
+_C_TM_TFC       = input.bool(false,         "TM-TFC",                           inline = "1",           group = lnCcolGP)
+_C_TM_Alt       = input.bool(false,         "TM-Alt",                           inline = "1",           group = lnCcolGP)
+_C_TM_TF1       = input.bool(false,         "TM-TF1",                           inline = "1",           group = lnCcolGP)
+_C_TM_TF2       = input.bool(false,         "TM-TF2",                           inline = "1",           group = lnCcolGP)
+_C_BBM          = input.bool(false,         "BBM",                              inline = "1",           group = lnCcolGP)
+_C_BBM_Alt      = input.bool(false,         "BBM_Alt",                          inline = "1",           group = lnCcolGP)
+_C_SLC_TFC      = input.bool(false,         "SCL-TFC",                          inline = "1",           group = lnCcolGP)
+_C_SLC_Alt      = input.bool(false,         "SCL-Alt",                          inline = "1",           group = lnCcolGP)
+_C_SLC_TF1      = input.bool(false,         "SCLL-TF1",                         inline = "1",           group = lnCcolGP)
+_C_MA_OCCrng    = input.bool(false,         "MA.OCC_Range",                     inline = "1",           group = lnCcolGP)
+_C_MA_OCCDf     = input.bool(false,         "MA.OCC_Diff",                      inline = "1",           group = lnCcolGP)
+_C_CMA_Crs      = input.bool(false,         "CMA.Crs",                          inline = "1",           group = lnCcolGP)
+_C_CMA_Df       = input.bool(false,         "CMA.Diff",                         inline = "1",           group = lnCcolGP)
+_C_MA_fltr      = input.bool(false,         "MA.Filter",                        inline = "1",           group = lnCcolGP)
+_C_MA_Df        = input.bool(false,         "MA.Diff",                          inline = "1",           group = lnCcolGP)
+_C_CE_rng       = input.bool(false,         "C.E",                              inline = "1",           group = lnCcolGP)
+_C_RSI          = input.bool(false,         "RSI",                              inline = "1",           group = lnCcolGP)
+_C_VWAP         = input.bool(false,         "VWAP",                             inline = "1",           group = lnCcolGP)
+_C_ADX_thr      = input.bool(false,         "ADX.Thr",                          inline = "1",           group = lnCcolGP)
+_C_ADX_Df       = input.bool(false,         "ADX.Diff",                         inline = "1",           group = lnCcolGP)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Functions       --  Universal Fx                        --
+//-----------------------------------------------------------------------------{                                                    {Functions}
+//////////////////////////////////////////////// MA Function ///////////////////////////////////////////////////////////{
+//DEMA MA Fx
+variantDoubleEmaFx(src, len) =>
+    v2 = ta.ema(src, len)
+    v6 = 2 * v2 - ta.ema(v2, len)
+    v6
+//TEMA MA Fx
+variantTripleEmaFx(src, len) =>
+    v2 = ta.ema(src, len)
+    v7 = 3 * (v2 - ta.ema(v2, len)) + ta.ema(ta.ema(v2, len), len)  // Triple Exponential
+    v7
+//ZEMA MA Fx
+variantZerolagEmaFx(src, len) =>
+    lag = (len - 1) / 2
+    emaSrc = src + src - src[lag]
+    v10 = ta.ema(emaSrc, len)
+    v10
+//SSMA MA Fx
+variantSuperSmootherFx(src, len) =>
+    a1 = math.exp(-1.414 * 3.14159 / len)
+    b1 = 2 * a1 * math.cos(1.414 * 3.14159 / len)
+    c2 = b1
+    c3 = -a1 * a1
+    c1 = 1 - c2 - c3
+    v9 = 0.0
+    v9 := c1 * (src + nz(src[1])) / 2 + c2 * nz(v9[1]) + c3 * nz(v9[2])
+    v9
+//TMA MA Fx
+variantTriangularSmaFx(src,len) =>
+    sma1 = ta.sma(src, len)
+    sma2 = ta.sma(sma1,len)
+    sma2
+//PWMA Fx
+pwmaFx(src, len, power) =>
+    sum = 0.0
+    weightSum = 0.0
+    for i = 0 to len - 1
+        weight = math.pow(len - i, power)
+        sum := sum + nz(src[i]) * weight
+        weightSum := weightSum + weight
+    sum / weightSum
+//VAR MA Fx
+cmoFx(src, len) =>
+    valpha  = 2 / (len + 1)
+    vud1    = src > src[1] ? src - src[1] : 0
+    vdd1    = src < src[1] ? src[1] - src : 0
+    vUD     = math.sum(vud1, 9)
+    vDD     = math.sum(vdd1, 9)
+    vCMO    = nz((vUD - vDD) / (vUD + vDD))
+    VAR     = 0.0
+    VAR     := nz(valpha * math.abs(vCMO) * src) + (1 - valpha * math.abs(vCMO)) * nz(VAR[1])
+    VAR
+//Wild MA Fx
+wild_ma(src, length) =>
+    _wild = 0.0
+    _wild := nz(_wild[1]) + (src - nz(_wild[1])) / length
+    _wild
+
+//MA Fx
+_ma(src, type, length, power) =>
+    float result = switch type
+        "SMA"           => ta.sma                   (src, length)
+        "EMA"           => ta.ema                   (src, length)
+        "HMA"           => ta.hma                   (src, length)
+        "WMA"           => ta.wma                   (src, length)
+        "VWMA"          => ta.vwma                  (src, length)
+        "SMMA"          => ta.rma                   (src, length)
+        "DEMA"          => variantDoubleEmaFx       (src, length)
+        "TEMA"          => variantTripleEmaFx       (src, length)
+        "ZEMA"          => variantZerolagEmaFx      (src, length)
+        "SSMA"          => variantSuperSmootherFx   (src, length)
+        "TMA"           => variantTriangularSmaFx   (src, length)               
+        "CCI"           => ta.cci                   (src, length)
+        "RSI"           => ta.rsi                   (src, length)
+        "CMO"           => cmoFx                    (src, length)
+        "WildMA"        => wild_ma                  (src, length)
+        "PWMA"          => pwmaFx                   (src, length, power)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Variables      --   Variables                           --
+//-----------------------------------------------------------------------------{                                                    {Variables}
+/////////////////////////////////////////// Confirmation Variables /////////////////////////////////////////////////////{
+//Bull-Bear{
+var bool bullbarID      = false
+var bool bearbarID      = false
+var bool _bullbar       = true
+var bool _bearbar       = true
+var int  _SigBuBeID     = 0
+var int  _SigBuBe       = 0
+//}
+//Trend Magic{
+var bool TMTFCLoID      = false
+var bool TMTFCSoID      = false
+var bool TMTFCLong      = true
+var bool TMTFCShort     = true
+var int _SigTMTFCID     = 0
+var int _SigTMTFC       = 0
+//
+var bool TMAltLoID      = false
+var bool TMAltSoID      = false
+var bool TMAltLong      = true
+var bool TMAltShort     = true
+var int _SigTMAltID     = 0
+var int _SigTMAlt       = 0
+//
+var bool TMTF1LoID      = false
+var bool TMTF1SoID      = false
+var bool TMTF1Long      = true
+var bool TMTF1Short     = true
+var int _SigTMTF1ID     = 0
+var int _SigTMTF1       = 0
+//
+var bool TMTF2LoID      = false
+var bool TMTF2SoID      = false
+var bool TMTF2Long      = true
+var bool TMTF2Short     = true
+var int _SigTMTF2ID     = 0
+var int _SigTMTF2       = 0
+//}
+//BB Magic{
+var bool BBMLoID        = false
+var bool BBMSoID        = false
+var bool BBMLong        = true
+var bool BBMShort       = true
+var int _SigBBMID       = 0
+var int _SigBBM         = 0
+//
+var bool BBMAltLoID     = false
+var bool BBMAltSoID     = false
+var bool BBMAltLong     = true
+var bool BBMAltShort    = true
+var int _SigBBMAltID    = 0
+var int _SigBBMAlt      = 0
+//}
+//SCL{
+var bool SCLTFCLoID     = false
+var bool SCLTFCSoID     = false
+var bool SCLTFCLong     = true
+var bool SCLTFCShort    = true
+var int _SigSCLTFCID    = 0
+var int _SigSCLTFC      = 0
+//
+var bool SCLAltLoID     = false
+var bool SCLAltSoID     = false
+var bool SCLAltLong     = true
+var bool SCLAltShort    = true
+var int _SigSCLAltID    = 0
+var int _SigSCLAlt      = 0
+//
+var bool SCLTF1LoID     = false
+var bool SCLTF1SoID     = false
+var bool SCLTF1Long     = true
+var bool SCLTF1Short    = true
+var int _SigSCLTF1ID    = 0
+var int _SigSCLTF1      = 0
+//}
+//MA{
+//O.C.C
+//O.C.C Cross
+var bool MAOCCLoID      = false
+var bool MAOCCSoID      = false
+var bool MAOCCLong      = true
+var bool MAOCCShort     = true
+var int _SigMAOCCID     = 0
+var int _SigMAOCC       = 0
+//O.C.C Diff
+var bool MAOCCDfLoID    = false
+var bool MAOCCDfSoID    = false
+var bool MAOCCDfLong    = true
+var bool MAOCCDfShort   = true
+var int _SigMAOCCDfID   = 0
+var int _SigMAOCCDf     = 0
+//CMA
+//CMA Cross
+var bool MACcrsLoID     = false
+var bool MACcrsSoID     = false
+var bool MACcrsLong     = true
+var bool MACcrsShort    = true
+var int _SigMACcrsID    = 0
+var int _SigMACcrs      = 0
+//CMA Diff
+var bool MACDfLoID      = false
+var bool MACDfSoID      = false
+var bool MACDfLong      = true
+var bool MACDfShort     = true
+var int _SigMACDfID     = 0
+var int _SigMACDf       = 0
+//MA Filter
+var bool MAfltrLoID     = false
+var bool MAfltrSoID     = false
+var bool MAfltrLong     = true
+var bool MAfltrShort    = true
+var int _SigMAfltrID    = 0
+var int _SigMAfltr      = 0
+//MA Df
+var bool MADfLoID       = false
+var bool MADfSoID       = false
+var bool MADfLong       = true
+var bool MADfShort      = true
+var int _SigMADfID      = 0
+var int _SigMADf        = 0
+//}
+//Chandelier Exit{
+var bool ceLoID         = false
+var bool ceSoID         = false
+var bool ceLong         = true
+var bool ceShort        = true
+var int _SigceID        = 0
+var int _Sigce          = 0
+//}
+//RSI{
+var bool rsiLoID        = false
+var bool rsiSoID        = false
+var bool rsiLong        = true
+var bool rsiShort       = true
+var int _SigrsiID       = 0
+var int _Sigrsi         = 0
+//}
+//VWAP{
+var bool vwapLoID       = false
+var bool vwapSoID       = false
+var bool vwapLong       = true
+var bool vwapShort      = true
+var int _SigvwapID      = 0
+var int _Sigvwap        = 0
+//}
+//ADX{
+//ADX Strong
+var bool adxStrongID    = false
+var bool adxStrong      = true
+var int _SigADXstrID    = 0
+var int _SigADXstr      = 0
+//ADX Df
+var bool adxDfID        = false
+var bool adxDf          = true
+var int _SigADXDfID     = 0
+var int _SigADXDf       = 0
+//}
+//}
+//-----------------------------------------------------------------------------}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+//§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§     Confirmations     §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░{           {Confirmations}
+// //-----------------------------------------------------------------------------
+// //          Bull/Bear       --  Bull/Bear                           --
+// //-----------------------------------------------------------------------------{                                                    {Bull/Bear}
+// /////////////////////////////////////////// Bull/Bear //////////////////////////////////////////////////////////////////{
+// bubeuse         = input.bool(false,     "Enable Bull/Bear",              group = bBGp,               tooltip = BubeT)
+// bullbarID       := close > open
+// bearbarID       := close < open
+// _bullbar        := bubeuse == false ? true : bullbarID
+// _bearbar        := bubeuse == false ? true : bearbarID
+// _SigBuBeID      := bullbarID ? 1 : bearbarID ? -1 : 0
+// _SigBuBe        := _bullbar ? 1 : _bearbar ? -1 : 0
+// //}
+/////////////////////////////////////////// Bull/Bear CTRL /////////////////////////////////////////////////////////////{
+// plot(_Sig_BuBe==true? 0 : na, "Bull.Bear", _SigBuBeID == 1 ? lime100 : _SigBuBeID == -1 ? red100 : gray100)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          CCI/Trend Magic --  Trend confirmation                  --
+//-----------------------------------------------------------------------------{                                                    {Trend Magic}
+//////////////////////////////////////////////// Trend Magic Multi TF inputs        ////////////////////////////////////{
+ccisrc      = input(close,          "  ",                           inline = "TMsrc",           group = TMGp)
+cci_upTsrc  = input(low,            "",                             inline = "TMsrc",           group = TMGp)
+cci_downTsrc= input(high,           "",                             inline = "TMsrc",           group = TMGp)
+//TM TFC inputs
+tmTFCuse    = input.bool(false,     "Enable T.M TFC",               inline = "TMTFC",           group = TMTFCGp)
+tmTFCcciP   = input(20,             "",                             inline = "TMTFC",           group = TMTFCGp)    ///💡check 10 or 12
+tmTFCATRp   = input(5,              "",                             inline = "TMTFC",           group = TMTFCGp)
+tmTFCATRmul = input(1,              "",                             inline = "TMTFC",           group = TMTFCGp)
+tmTFCthrLo  = input(0,              "Long CCI threshold",           inline = "TFCTR",           group = TMTFCGp)
+tmTFCthrSo  = input(0,              "Short CCI threshold",          inline = "TFCTR",           group = TMTFCGp)
+//TM Alt
+tmAltuse    = input.bool(false,     "",                             inline = "TMAlt",           group = TMaltGp)
+tmAltResV   = input.int(6,          "",                             inline = "TMAlt",           group = TMaltGp)
+tmAltcciP   = input(20,             "",                             inline = "TMAlt",           group = TMaltGp)
+tmAltATRp   = input(5,              "",                             inline = "TMAlt",           group = TMaltGp)
+tmAltATRmul = input(1,              "",                             inline = "TMAlt",           group = TMaltGp)
+tmAltthrLo  = input(0,              "Long CCI threshold",           inline = "TFATR",           group = TMaltGp)
+tmAltthrSo  = input(0,              "Short CCI threshold",          inline = "TFATR",           group = TMaltGp)
+//TM TF1 inputs
+tmTF1use    = input.bool(false,     "",                             inline = "TMTF1",           group = TMTF1Gp)
+tmTF1tf     = input.timeframe("3",  "",                             inline = "TMTF1",           group = TMTF1Gp)
+tmTF1cciP   = input(20,             "",                             inline = "TMTF1",           group = TMTF1Gp)
+tmTF1ATRp   = input(5,              "",                             inline = "TMTF1",           group = TMTF1Gp)
+tmTF1ATRmul = input(1,              "",                             inline = "TMTF1",           group = TMTF1Gp)
+tmTF1thrLo  = input(0,              "Long CCI threshold",           inline = "TF1TR",           group = TMTF1Gp)
+tmTF1thrSo  = input(0,              "Short CCI threshold",          inline = "TF1TR",           group = TMTF1Gp)
+//TM TF2 inputs
+tmTF2use    = input.bool(false,     "",                             inline = "TMTF2",           group = TMTF2Gp)
+tmTF2tf     = input.timeframe("15", "",                             inline = "TMTF2",           group = TMTF2Gp)
+tmTF2cciP   = input(20,             "",                             inline = "TMTF2",           group = TMTF2Gp)
+tmTF2ATRp   = input(5,              "",                             inline = "TMTF2",           group = TMTF2Gp)
+tmTF2ATRmul = input(1,              "",                             inline = "TMTF2",           group = TMTF2Gp)
+tmTF2thrLo  = input(0,              "Long CCI threshold",           inline = "TF1TR",           group = TMTF2Gp)
+tmTF2thrSo  = input(0,              "Short CCI threshold",          inline = "TF1TR",           group = TMTF2Gp)
+//}
+//////////////////////////////////////////////// Trend Magic Multi TF Calculations  ////////////////////////////////////{
+//TM TFC Calculation
+float cciTFC_ATR        = ta.atr(tmTFCATRp)
+cciTFC_upT              = low   - cciTFC_ATR * tmTFCATRmul
+cciTFC_downT            = high  + cciTFC_ATR * tmTFCATRmul
+float cciTFC            = ta.cci(ccisrc, tmTFCcciP)
+//TM TFC Trend Magic Calculation
+float TMTFC             = 0.0
+TMTFC                   := cciTFC >= 0 ? (cciTFC_upT < nz(TMTFC[1]) ? nz(TMTFC[1]) : cciTFC_upT) :
+                         (cciTFC_downT > nz(TMTFC[1]) ? nz(TMTFC[1]) : cciTFC_downT)
+//TM Alt Calculation
+tmAltcciPm              = tmAltcciP * tmAltResV
+tmAltATRpm              = tmAltATRp * tmAltResV
+float cciAlt_ATR        = ta.atr(tmAltATRpm)
+cciAlt_upT              = low   - cciAlt_ATR * tmAltATRmul
+cciAlt_downT            = high  + cciAlt_ATR * tmAltATRmul
+float cciAlt            = ta.cci(ccisrc, tmAltcciPm)
+//TM Alt Trend Magic Calculation
+float TMAlt             = 0.0
+TMAlt                   := cciAlt >= 0 ? (cciAlt_upT < nz(TMAlt[1]) ? nz(TMAlt[1]) : cciAlt_upT) :
+                         (cciAlt_downT > nz(TMAlt[1]) ? nz(TMAlt[1]) : cciAlt_downT)
+//TM TF1 Calculation
+float cciTF1_ATR        = request.security(syminfo.tickerid, tmTF1tf, ta.atr(tmTF1ATRp))
+float cciTF1low         = request.security(syminfo.tickerid, tmTF1tf, low)
+float cciTF1high        = request.security(syminfo.tickerid, tmTF1tf, high)
+float cciTF1_upT        = request.security(syminfo.tickerid, tmTF1tf, cciTF1low    - cciTF1_ATR * tmTF1ATRmul)
+float cciTF1_downT      = request.security(syminfo.tickerid, tmTF1tf, cciTF1high   + cciTF1_ATR * tmTF1ATRmul)
+float cciTF1            = request.security(syminfo.tickerid, tmTF1tf, ta.cci(ccisrc, tmTF1cciP))
+float TMTF1             = 0.0
+TMTF1                   := cciTF1 >= 0 ? (cciTF1_upT < nz(TMTF1[1]) ? nz(TMTF1[1]) : cciTF1_upT) :
+                         (cciTF1_downT > nz(TMTF1[1]) ? nz(TMTF1[1]) : cciTF1_downT)
+//TM TF2 Calculation
+float cciTF2_ATR        = request.security(syminfo.tickerid, tmTF2tf, ta.atr(tmTF2ATRp))
+float cciTF2low         = request.security(syminfo.tickerid, tmTF2tf, low)
+float cciTF2high        = request.security(syminfo.tickerid, tmTF2tf, high)
+float cciTF2_upT        = request.security(syminfo.tickerid, tmTF2tf, cciTF2low    - cciTF2_ATR * tmTF2ATRmul)
+float cciTF2_downT      = request.security(syminfo.tickerid, tmTF2tf, cciTF2high   + cciTF2_ATR * tmTF2ATRmul)
+float cciTF2            = request.security(syminfo.tickerid, tmTF2tf, ta.cci(ccisrc, tmTF2cciP))
+float TMTF2             = 0.0
+TMTF2                   := cciTF2 >= 0 ? (cciTF2_upT < nz(TMTF2[1]) ? nz(TMTF2[1]) : cciTF2_upT) :
+                         (cciTF2_downT > nz(TMTF2[1]) ? nz(TMTF2[1]) : cciTF2_downT)
+//}
+//////////////////////////////////////////////// Trend Magic Multi TF Conditions    ////////////////////////////////////{
+//TM TFC Conditions
+TMTFCLoID       := tmTFCthrLo == tmTFCthrSo ? (cciTFC > tmTFCthrLo  ? true : false) : (cciTFC >= tmTFCthrLo ? true : false)
+TMTFCSoID       := tmTFCthrLo == tmTFCthrSo ? (cciTFC < tmTFCthrSo  ? true : false) : (cciTFC <= tmTFCthrSo ? true : false)
+TMTFCLong       := tmTFCuse  == false       ? true : TMTFCLoID
+TMTFCShort      := tmTFCuse  == false       ? true : TMTFCSoID
+_SigTMTFCID     := TMTFCLoID ? 1 : TMTFCSoID ? -1 : 0
+// _SigTMTFC       := TMTFCLong ? 1 : TMTFCShort? -1 : 0
+//TM Alt Conditions
+TMAltLoID       := tmAltthrLo == tmAltthrSo ? (cciAlt > tmAltthrLo  ? true : false) : (cciAlt >= tmAltthrLo ? true : false)
+TMAltSoID       := tmAltthrLo == tmAltthrSo ? (cciAlt < tmAltthrSo  ? true : false) : (cciAlt <= tmAltthrSo ? true : false)
+TMAltLong       := tmAltuse  == false       ? true : TMAltLoID
+TMAltShort      := tmAltuse  == false       ? true : TMAltSoID
+_SigTMAltID     := TMAltLoID ? 1 : TMAltSoID ? -1 : 0
+// _SigTMAlt       := TMAltLong ? 1 : TMAltShort? -1 : 0
+//TM TF1 Conditions
+TMTF1LoID       := tmTF1thrLo == tmTF1thrSo ? (cciTF1 > tmTF1thrLo ? true : false) : (cciTF1 >= tmTF1thrLo ? true : false)
+TMTF1SoID       := tmTF1thrLo == tmTF1thrSo ? (cciTF1 < tmTF1thrSo ? true : false) : (cciTF1 <= tmTF1thrSo ? true : false)
+TMTF1Long       := tmTF1use     == false          ? true : TMTF1LoID
+TMTF1Short      := tmTF1use     == false          ? true : TMTF1SoID
+_SigTMTF1ID     := TMTF1LoID ? 1 : TMTF1SoID  ? -1 : 0
+// _SigTMTF1       := TMTF1Long ? 1 : TMTF1Short ? -1 : 0
+//TM TF2 Conditions
+TMTF2LoID       := tmTF2thrLo == tmTF2thrSo ? (cciTF2 > tmTF2thrLo ? true : false) : (cciTF2 >= tmTF2thrLo ? true : false)
+TMTF2SoID       := tmTF2thrLo == tmTF2thrSo ? (cciTF2 < tmTF2thrSo ? true : false) : (cciTF2 <= tmTF2thrSo ? true : false)
+TMTF2Long       := tmTF2use     == false          ? true : TMTF2LoID
+TMTF2Short      := tmTF2use     == false          ? true : TMTF2SoID
+_SigTMTF2ID     := TMTF2LoID ? 1 : TMTF2SoID  ? -1 : 0
+// _SigTMTF2       := TMTF2Long ? 1 : TMTF2Short ? -1 : 0
+//}
+//////////////////////////////////////////////// Trend Magic Multi TF CTRL          ////////////////////////////////////{
+//TM and CCI Value Plots
+// plot(TMTFC,       "V_TM.TFC",   TMTFCLoID   ? green   : TMTFCSoID               ? red    : gray,        display = dw_Y)
+// plot(cciTFC,      "V_CCI.TFC",  TMTFCLoID   ? green   : TMTFCSoID               ? red    : gray,        display = dw_Y)
+// plot(TMAlt,       "V_TM.Alt",   TMAltLoID   ? green   : TMAltSoID               ? red    : gray,        display = dw_Y)
+// plot(cciAlt,      "V_CCI.Alt",  TMAltLoID   ? green   : TMAltSoID               ? red    : gray,        display = dw_Y)
+// plot(TMTF1,       "V_TM.TF1",   TMTF1LoID   ? green   : TMTF1SoID               ? red    : gray,        display = dw_Y)
+// plot(cciTF1,      "V_CCI.TF1",  TMTF1LoID   ? green   : TMTF1SoID               ? red    : gray,        display = dw_Y)
+// plot(TMTF2,       "V_TM.TF2",   TMTF2LoID   ? green   : TMTF2SoID               ? red    : gray,        display = dw_Y)
+// plot(cciTF2,      "V_CCI.TF2",  TMTF2LoID   ? green   : TMTF2SoID               ? red    : gray,        display = dw_Y)
+//Signal ID CTRL
+plot(_Sig_TM_TFC == true ? 1    : na, "TM.TFC",  _SigTMTFCID  == 1 ? lime100 : _SigTMTFCID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_TM_Alt == true ? 11   : na, "TM.Alt",  _SigTMAltID  == 1 ? lime100 : _SigTMAltID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_TM_TF1 == true ? 111  : na, "TM.TF1",  _SigTMTF1ID  == 1 ? lime100 : _SigTMTF1ID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_TM_TF2 == true ? 1111 : na, "TM.TF2",  _SigTMTF2ID  == 1 ? lime100 : _SigTMTF2ID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          BB Magic        --  Trend confirmation                  --
+//-----------------------------------------------------------------------------{                                                    {BB Magic}
+//////////////////////////////////////////////// BB Magic inputs        ////////////////////////////////////////////////{
+bbmuse          = input.bool(false,         "",                         inline = "BB",              group = BBMGp)
+bbmsrc          = input(close,              "",                         inline = "BB",              group = BBMGp)
+bbmleng         = input.int(20,             "",                         inline = "BB",              group = BBMGp)
+bbmmult         = input.float(2.0,          "",                         inline = "BB",              group = BBMGp)
+bbmDfuse        = input.bool(false,         "",                         inline = "BB",              group = BBMGp)
+bbmAltuse       = input.bool(false,         "",                         inline = "BB",              group = BBMaltGp)
+bbmAltV         = input.int(6,              "",                         inline = "BB",              group = BBMaltGp)
+bbmAltleng      = input.int(20,             "",                         inline = "BB",              group = BBMaltGp)
+bbmAltmult      = input.float(2.0,          "",                         inline = "BB",              group = BBMaltGp)
+bbmAltDfuse     = input.bool(false,         "",                         inline = "BB",              group = BBMaltGp)
+//}
+//////////////////////////////////////////////// BB Magic Calculations  ////////////////////////////////////////////////{
+//BBM Calculations
+[bbmmiddle, bbmupper, bbmlower]  = ta.bb(bbmsrc, bbmleng, bbmmult)
+
+bb_magic        = bbmlower
+bb_magic        := nz(bb_magic[1], bb_magic)
+
+bbmDIR_UP       = 1
+bbmDIR_DN       = -1
+
+bbmDir          = bbmDIR_DN
+
+if close < bb_magic and bbmDir == bbmDIR_UP
+    bbmDir := bbmDIR_DN
+
+if close > bb_magic and bbmDir == bbmDIR_DN
+    bbmDir := bbmDIR_UP
+
+if bbmlower > bb_magic and bbmDir == bbmDIR_UP
+    bb_magic := bbmlower
+
+if bbmupper < bb_magic and bbmDir == bbmDIR_DN
+    bb_magic := bbmupper
+
+//BBM Alt Calculations
+bbmAltlengm     =   bbmAltleng * bbmAltV
+[bbmAltmiddle, bbmAltupper, bbmAltlower]  = ta.bb(bbmsrc, bbmAltlengm, bbmAltmult)
+
+bb_magicAlt        = bbmAltlower
+bb_magicAlt        := nz(bb_magicAlt[1], bb_magicAlt)
+
+bbmAltDIR_UP       = 1
+bbmAltDIR_DN       = -1
+
+bbmAltDir          = bbmAltDIR_DN
+
+if close < bb_magicAlt and bbmAltDir == bbmAltDIR_UP
+    bbmAltDir := bbmAltDIR_DN
+
+if close > bb_magicAlt and bbmAltDir == bbmAltDIR_DN
+    bbmAltDir := bbmAltDIR_UP
+
+if bbmAltlower > bb_magicAlt and bbmAltDir == bbmAltDIR_UP
+    bb_magicAlt := bbmAltlower
+
+if bbmAltupper < bb_magicAlt and bbmAltDir == bbmAltDIR_DN
+    bb_magicAlt := bbmAltupper
+
+//}
+//////////////////////////////////////////////// BB Magic Conditions    ////////////////////////////////////////////////{
+//BBM Conditions
+bbmDfV          = bb_magic - bb_magic[1]
+bool bbmDfLo    = bbmDfuse == false ? true : bbmDfV > 0
+bool bbmDfSo    = bbmDfuse == false ? true : bbmDfV < 0
+
+BBMLoID         := bbmDir == bbmDIR_UP and bbmDfLo
+BBMSoID         := bbmDir == bbmDIR_DN and bbmDfSo
+BBMLong         := bbmuse == false ? true : BBMLoID
+BBMShort        := bbmuse == false ? true : BBMSoID
+_SigBBMID       := BBMLoID ? 1 : BBMSoID ? -1 : 0
+_SigBBM         := BBMLong ? 1 : BBMShort ? -1 : 0
+//BBM Alt Conditions
+bbmAltDfV       = bb_magicAlt - bb_magicAlt[1]
+bool bbmAltDfLo = bbmAltDfuse == false ? true : bbmAltDfV > 0
+bool bbmAltDfSo = bbmAltDfuse == false ? true : bbmAltDfV < 0
+
+BBMAltLoID     := bbmAltDir == bbmAltDIR_UP and bbmAltDfLo
+BBMAltSoID     := bbmAltDir == bbmAltDIR_DN and bbmAltDfSo
+BBMAltLong     := bbmAltuse == false ? true : BBMAltLoID
+BBMAltShort    := bbmAltuse == false ? true : BBMAltSoID
+_SigBBMAltID   := BBMAltLoID ? 1 : BBMAltSoID ? -1 : 0
+_SigBBMAlt     := BBMAltLong ? 1 : BBMAltShort ? -1 : 0
+//}
+//////////////////////////////////////////////// BB Magic CTRL          ////////////////////////////////////////////////{
+//BB Magic value CTRL
+// plot(bb_magic,      "V_BBM",        BBMLoID           ? green   : BBMSoID            ? red    : gray,       display = dw_Y)
+// plot(bb_magicAlt,   "V_BBM_Alt",    BBMAltLoID        ? green   : BBMAltSoID         ? red    : gray,       display = dw_Y)
+//BB Magic Signal CTRL
+plot(_Sig_BBM     == true ? 2   : na, "BBM",     _SigBBMID    == 1 ? lime100 : _SigBBMID    == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_BBM_Alt == true ? 22  : na, "BBM_Alt", _SigBBMAltID == 1 ? lime100 : _SigBBMAltID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Scalping Line   --  Trend confirmation                  --
+//-----------------------------------------------------------------------------{                                                    {Scalping Line}
+/////////////////////////////////////////// Scalping Line Multi TF inputs       ////////////////////////////////////////{
+SCLsrc          = input(close,          "Scalping Line source",             group = SCLGP,      tooltip = SCLsrcT)
+//SCL TFC inputs
+SCLTFCuse       = input.bool(false,     "Enable SCL TFC",               inline = "SCLTFC",          group = SCLTFCGP)
+slcTFCper       = input.float(1.0,      "", step=0.1, minval=0,         inline = "SCLTFC",          group = SCLTFCGP)
+slcTFCmainper   = input(100,            "",                             inline = "SCLTFC",          group = SCLTFCGP)
+slcTFCSigper    = input(7,              "",           tooltip = SCLT,   inline = "SCLTFC",          group = SCLTFCGP)
+slcTFCMAtype    = input.string("SMA",   "Moving Average Type",          inline = "SCLTFCMA",        group = SCLTFCGP, 
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+slcpowTFC       = input.int(2,          "PWMA Power", tooltip = PWMApT, inline = "SCLTFCMA",        group = SCLTFCGP)
+//SCL Alt inputs
+SCLAltuse       = input.bool(false,     "Enable SCL Alternate Resolution",inline = "SCLAlt",        group = SCLAltGP)
+SCLResV         = input.int(6,          "",                             inline = "SCLAlt",          group = SCLAltGP)
+slcAltper       = input.float(1.0,      "%", step=0.1, minval=0,        inline = "SCLAlt1",         group = SCLAltGP)
+slcAltmainper   = input(100,            "Main P.",                      inline = "SCLAlt1",         group = SCLAltGP)
+slcAltSigper    = input(7,              "Signal P.", tooltip = SCLT,    inline = "SCLAlt1",         group = SCLAltGP)
+slcAltMAtype    = input.string("SMA",   "Moving Average Type",          inline = "SCLAltMA",        group = SCLAltGP, 
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+slcpowAlt       = input.int(2,          "PWMA Power", tooltip = PWMApT, inline = "SCLAltMA",        group = SCLAltGP)
+//SCL TF1 inputs
+SCLTF1rangeuse  = input.bool(false,     "Enable SCL TF1",               inline = "SCLTF1",          group = SCLTF1GP)
+slcTF1          = input.timeframe("1",  "  Timeframe",                  inline = "SCLTF1",          group = SCLTF1GP)
+slcTF1per       = input.float(1.0,      "%", step=0.1, minval=0,        inline = "SCLTF11",         group = SCLTF1GP)
+slcTF1mainper   = input(99,             "Main P.",                      inline = "SCLTF11",         group = SCLTF1GP)
+slcTF1Sigper    = input(7,              "Signal P.", tooltip = SCLT,    inline = "SCLTF11",         group = SCLTF1GP)
+slcTF1MAtype    = input.string("SMA",   "Moving Average Type",          inline = "SCLTF1MA",        group = SCLTF1GP,
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+slcpowTF1       = input.int(2,          "PWMA Power", tooltip = PWMApT, inline = "SCLTF1MA",        group = SCLTF1GP)
+//}
+/////////////////////////////////////////// Scalping Line Multi TF Calculations ////////////////////////////////////////{
+//TFC Calculations
+//TFC double smoothed MA
+var float sclTFCma  = _ma(SCLsrc,   slcTFCMAtype,   math.ceil(slcTFCmainper/2),         slcpowTFC)
+sclMATFC            = _ma(sclTFCma, slcTFCMAtype,   math.floor(slcTFCmainper / 2) + 1,  slcpowTFC)
+//TFC ssMA
+sclTFCssMA          = sclMATFC>close+sclMATFC*slcTFCper/100 ? sclMATFC : sclMATFC<close-sclMATFC*slcTFCper/100 ? sclMATFC : close
+//TFC Signal Line
+sclTFCSigL          = _ma(SCLsrc,   slcTFCMAtype,   slcTFCSigper,                       slcpowTFC)
+//TFC Scalp Line
+sclTFCSclpL         = sclTFCSigL - sclTFCssMA
+//
+//Alt Calculations
+slcAltmainperm      = slcAltmainper * SCLResV
+slcAltSigperm       = slcAltSigper  * SCLResV
+//Alt double smoothed MA
+var float sclAltma  = _ma(SCLsrc,   slcAltMAtype,   math.ceil(slcAltmainperm/2),         slcpowAlt)
+sclMAAlt            = _ma(sclAltma, slcAltMAtype,   math.floor(slcAltmainperm / 2) + 1,  slcpowAlt)
+//Alt ssMA
+sclAltssMA          = sclMAAlt>close+sclMAAlt*slcAltper/100 ? sclMAAlt : sclMAAlt<close-sclMAAlt*slcAltper/100 ? sclMAAlt : close
+//Alt Signal Line
+sclAltSigL          = _ma(SCLsrc,   slcAltMAtype,   slcAltSigperm,                       slcpowAlt)
+//Alt Scalp Line
+sclAltSclpL         = sclAltSigL - sclAltssMA
+//
+//TF1 Calculations
+//TF1 double smoothed MA
+var float sclTF1ma  = request.security(syminfo.tickerid,  slcTF1, _ma (SCLsrc, slcTF1MAtype, math.ceil(slcTF1mainper / 2),slcpowTF1))
+sclMATF1            = request.security(syminfo.tickerid,  slcTF1, _ma (sclTF1ma,    slcTF1MAtype, math.floor(slcTF1mainper / 2) + 1,slcpowTF1))
+//FT1 SSMA
+sclTF1ssMA          = sclMATF1>request.security(syminfo.tickerid,  slcTF1, close)+sclMATF1*slcTF1per/100 ? sclMATF1 :
+                     sclMATF1<request.security(syminfo.tickerid, slcTF1, close)-sclMATF1*slcTF1per/100 ? sclMATF1 :
+                     request.security(syminfo.tickerid, slcTF1, close)
+//TF1 Signal Line
+sclTF1SigL          = request.security(syminfo.tickerid,  slcTF1, _ma(SCLsrc,  slcTF1MAtype, slcTF1Sigper, slcpowTF1))
+//TF1 Scalp Line
+sclTF1SclpL         = sclTF1SigL - sclTF1ssMA
+//}
+/////////////////////////////////////////// Scalping Line Multi TF Conditions   ////////////////////////////////////////{
+//SCL TFC Conditions
+SCLTFCLoID          := sclTFCSclpL < 0
+SCLTFCSoID          := sclTFCSclpL > 0
+SCLTFCLong          := SCLTFCuse == false ? true : SCLTFCLoID
+SCLTFCShort         := SCLTFCuse == false ? true : SCLTFCSoID
+_SigSCLTFCID        := SCLTFCLoID ? 1 : SCLTFCSoID ? -1 : 0
+_SigSCLTFC          := SCLTFCLong ? 1 : SCLTFCShort ? -1 : 0
+//SCL Alt Conditions
+SCLAltLoID          := sclAltSclpL < 0
+SCLAltSoID          := sclAltSclpL > 0
+SCLAltLong          := SCLAltuse == false ? true : SCLAltLoID
+SCLAltShort         := SCLAltuse == false ? true : SCLAltSoID
+_SigSCLAltID        := SCLAltLoID ? 1 : SCLAltSoID ? -1 : 0
+_SigSCLAlt          := SCLAltLong ? 1 : SCLAltShort ? -1 : 0
+//SCL TF1 Conditions
+SCLTF1LoID          := sclTF1SclpL < 0
+SCLTF1SoID          := sclTF1SclpL > 0
+SCLTF1Long          := SCLTF1rangeuse == false ? true : SCLTF1LoID
+SCLTF1Short         := SCLTF1rangeuse == false ? true : SCLTF1SoID
+_SigSCLTF1ID        := SCLTF1LoID ? 1 : SCLTF1SoID ? -1 : 0
+_SigSCLTF1          := SCLTF1Long ? 1 : SCLTF1Short ? -1 : 0
+//}
+/////////////////////////////////////////// Scalping Line Multi TF CTRL         ////////////////////////////////////////{
+//Value CTRL
+// plot(sclTFCSclpL,   "V_SCL.TFC",    SCLTFCLoID          ? green  : SCLTFCSoID           ? red    : gray,    display = dw_Y)
+// plot(sclAltSclpL,   "V_SCL.Alt",    SCLAltLoID          ? green  : SCLAltSoID           ? red    : gray,    display = dw_Y)
+// plot(sclTF1SclpL,   "V_SCL.TF1",    SCLTF1LoID          ? green  : SCLTF1SoID           ? red    : gray,    display = dw_Y)
+//Signal ID CTRL
+plot(_Sig_SLC_TFC == true ? 3  : na, "SCL.TFC", _SigSCLTFCID == 1   ? lime100 : _SigSCLTFCID == -1  ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_SLC_Alt == true ? 33 : na, "SCL.Alt", _SigSCLAltID == 1   ? lime100 : _SigSCLAltID == -1  ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_SLC_TF1 == true ? 33 : na, "SCL.TF1", _SigSCLTF1ID == 1   ? lime100 : _SigSCLTF1ID == -1  ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          MA              --  Trend confirmation                  --
+//-----------------------------------------------------------------------------{                                                    {MA}
+//////////////////////////////////////////////// MA inputs   ///////////////////////////////////////////////////////////
+//MA universal source
+masrc       = input(close,          "MA Universal source",                  tooltip = MAsrcT,       group = MAGp)
+//////////////////////////////////////////////// Open-Close-Cross    ///////////////////////////////////////////////////{
+//OCC Strategy inputs
+maOCCuse    = input.bool(false,     "Enable O.C.C  ",                       inline = "OCC1",        group = MAOCCG)
+maOCCDfuse  = input.bool(false,     "Diff?",                                inline = "OCC1",        group = MAOCCG)
+maOCCDfTre  = input.float(0.1,      " Threshold",                           inline = "OCC1",        group = MAOCCG)
+maOCClen    = input.int(20,         "Length",      minval = 1,              inline = "OCC1",        group = MAOCCG)
+maOCCresuse = input.bool(false,     "Alternate Resolution?   ",             inline = "OCC2",        group = MAOCCG)
+maOCCAltRes = input.int(6,          "Resolution Multiplier",                inline = "OCC2",        group = MAOCCG)
+MAOCCtype   = input.string("EMA",   "Moving Average Type",                  inline = "OCCMA",       group = MAOCCG,
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+maOCCpow    = input.int(2,          "PWMA Power",  tooltip = PWMApT,        inline = "OCCMA",       group = MAOCCG)
+//O.C.C Calculations
+maOCCres        = maOCCresuse ? maOCCAltRes : 1
+maClosSer       = _ma(close,    MAOCCtype,  maOCClen,            maOCCpow)
+maOpenSer       = _ma(open,     MAOCCtype,  maOCClen,            maOCCpow)
+maClosSerRs     = _ma(close,    MAOCCtype,  maOCClen * maOCCres, maOCCpow)
+maOpenSerRs     = _ma(open,     MAOCCtype,  maOCClen * maOCCres, maOCCpow)
+maOCCClosRsDf   = maClosSerRs * 100 - maClosSerRs[1] * 100
+maOCCOpenrsDf   = maOpenSerRs * 100 - maOpenSerRs[1] * 100
+//O.C.C Conditions
+//O.C.C Range-Cross
+MAOCCLoID       := maClosSerRs > maOpenSerRs
+MAOCCSoID       := maClosSerRs < maOpenSerRs
+MAOCCLong       := maOCCuse == false ? true : MAOCCLoID
+MAOCCShort      := maOCCuse == false ? true : MAOCCSoID
+_SigMAOCCID     := MAOCCLoID ? 1 : MAOCCSoID ? -1 : 0
+_SigMAOCC       := MAOCCLong ? 1 : MAOCCShort ? -1 : 0
+//O.C.C Diff
+MAOCCDfLoID     := maOCCClosRsDf >= maOCCDfTre      or maOCCClosRsDf >= maOCCDfTre
+MAOCCDfSoID     := maOCCOpenrsDf <= maOCCDfTre * -1 or maOCCOpenrsDf <= maOCCDfTre * -1
+MAOCCDfLong     := maOCCDfuse == false ? true : MAOCCDfLoID
+MAOCCDfShort    := maOCCDfuse == false ? true : MAOCCDfSoID
+_SigMAOCCDfID   := MAOCCDfLoID ? 1 : MAOCCDfSoID ? -1 : 0
+_SigMAOCCDf     := MAOCCDfLong ? 1 : MAOCCDfShort ? -1 : 0
+//O.C.C CTRL
+// plot(maClosSerRs,   "V_OCC.Close", MAOCCLoID         ? green   : MAOCCSoID          ? red    : gray,     display = dw_Y)
+// plot(maOpenSerRs,   "V_OCC.Open",  MAOCCLoID         ? green   : MAOCCSoID          ? red    : gray,     display = dw_Y)
+plot(_Sig_MA_OCCrng == true ? 4  : na, "OCC_Range", _SigMAOCCID == 1  ? lime100 : _SigMAOCCID == -1  ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_MA_OCCDf  == true ? 44 : na, "OCC_Diff",  _SigMAOCCDfID == 1? lime100 : _SigMAOCCDfID == -1? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//////////////////////////////////////////////// Corrected MA   ////////////////////////////////////////////////////////{
+//Corrected MA inputs
+maCcrsuse   = input.bool(false,     "Cross?",                               inline = "CMA",         group = MACGp)
+maCDfuse    = input.bool(false,     "Diff?",                                inline = "CMA",         group = MACGp)
+maCDfTre    = input.float(0.1,      "Threshold",                            inline = "CMA",         group = MACGp)
+maClen      = input.int(35,         "Length",       minval = 1,             inline = "CMA",         group = MACGp)
+maCtype     = input.string("SMA",   "Moving Average Type",                  inline = "CMAMA",       group = MACGp,
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+maCpow      = input.int(2,          "PWMA Power",    tooltip = PWMApT,      inline = "CMAMA",       group = MACGp)
+//Corrected MA calculations
+maC                         = _ma(masrc, maCtype, maClen, maCpow)
+cma                         = maC
+v1                          = ta.variance(masrc, maClen)
+v2                          = math.pow(nz(cma[1], cma) - maC, 2)
+v3                          = v1 == 0 or v2 == 0 ? 1 : v2 / (v1 + v2)
+var tolerance = math.pow(10, -5)
+float err = 1
+// Gain Factor
+float kPrev = 1
+float k = 1
+
+for i = 0 to 5000
+    if err > tolerance
+        k := v3 * kPrev * (2 - kPrev)
+        err := kPrev - k
+        kPrev := k
+cma := nz(cma[1], masrc) + k * (maC - nz(cma[1], masrc))
+//Corrected MA Conditions
+//CMA Cross
+MACcrsLoID      := maC > cma
+MACcrsSoID      := maC < cma
+MACcrsLong      := maCcrsuse == false ? true : MACcrsLoID
+MACcrsShort     := maCcrsuse == false ? true : MACcrsSoID
+_SigMACcrsID    := MACcrsLoID ? 1 : MACcrsSoID ? -1 : 0
+_SigMACcrs      := MACcrsLong ? 1 : MACcrsShort ? -1 : 0
+//CMA Df
+float cmaDf     =  cma *100 - cma[1] * 100
+MACDfLoID       := cmaDf >= maCDfTre
+MACDfSoID       := cmaDf <= maCDfTre * -1
+MACDfLong       := maCDfuse == false ? true : MACDfLoID
+MACDfShort      := maCDfuse == false ? true : MACDfSoID
+_SigMACDfID     := MACDfLoID ? 1 : MACDfSoID ? -1 : 0
+_SigMACDfID     := MACDfLoID ? 1 : MACDfSoID ? -1 : 0
+//Corrected MA CTRL
+// plot(cma,           "V_CMA",        MACDfLoID         ? green   : MACDfSoID          ? red    : gray,       display = dw_Y)
+// plot(cma,           "V_CMA_DfV",    MACDfLoID         ? green   : MACDfSoID          ? red    : gray,       display = dw_Y)
+plot(_Sig_CMA_Crs == true ? 5  : na, "CMA.Cross", _SigMACcrsID == 1 ? lime100 : _SigMACcrsID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+plot(_Sig_CMA_Df  == true ? 55 : na, "CMA.Df",    _SigMACDfID  == 1 ? lime100 : _SigMACDfID  == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//////////////////////////////////////////////// MA Filter  ////////////////////////////////////////////////////////////{
+//MA Filter inputs
+mafltruse   = input.bool(false,     "Enable MA Filter",                     inline = "MAF",         group = MAfltrGp)
+mafltrlen   = input.int(50,         " Length",     minval = 1,              inline = "MAF",         group = MAfltrGp)
+mafltxtruse = input.bool(false,     "Extreme?",   tooltip= MAfltlxtT,       inline = "MAF",         group = MAfltrGp)
+MAfltrtype  = input.string("EMA",   "Moving Average Type",                  inline = "MAFMA",       group = MAfltrGp,
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+mafltrpow   = input.int(2,          "PWMA Power",      tooltip = PWMApT,    inline = "MAFMA",       group = MAfltrGp)
+//MA Filter calculations
+float MAfltr    = _ma(masrc, MAfltrtype, mafltrlen, mafltrpow)
+MAfltsrcLoTB    = mafltxtruse ? low  : close
+MAfltsrcSoTB    = mafltxtruse ? high : close
+//MA Filter conditions
+MAfltrLoID      := MAfltr < MAfltsrcLoTB
+MAfltrSoID      := MAfltr > MAfltsrcSoTB
+MAfltrLong      := mafltruse == false ? true : MAfltrLoID
+MAfltrShort     := mafltruse == false ? true : MAfltrSoID
+_SigMAfltrID    := MAfltrLoID ? 1 : MAfltrSoID ? -1 : 0
+_SigMAfltr      := MAfltrLong ? 1 : MAfltrShort ? -1 : 0
+//MA Filter CTRL
+// plot(MAfltr,        "V_MA.Filter",  MAfltrLoID        ? green   : MAfltrSoID         ? red    : gray,       display = dw_Y)
+plot(_Sig_MA_fltr == true ? 6 : na, "MA.Filter", _SigMAfltrID == 1 ? lime100 : _SigMAfltrID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//////////////////////////////////////////////// MA Diff  //////////////////////////////////////////////////////////////{
+//MA Diff inputs
+maDfuse    = input.bool(false,     "Enable MA Df",                          inline = "MADf",       group = MADfGp)
+maDfTre    = input.float(0.1,      "Threshold",                             inline = "MADf",       group = MADfGp) 
+maDflen    = input.int(20,         "  Length",   minval = 1,                inline = "MADf",       group = MADfGp)
+MADftype   = input.string("EMA",   "Moving Average Type",                   inline = "MADfMA",     group = MADfGp,
+                     options = ["SMA","EMA","HMA","WMA","VWMA","SMMA","DEMA","TEMA","ZEMA","SSMA","TMA","CCI","RSI","CMO", "WildMA", "PWMA"])
+
+maDfpow    = input.int(2,          "PWMA Power",    tooltip = PWMApT,       inline = "MADfMA",     group = MADfGp)
+//MA Diff calculations
+float MADf      = _ma(masrc,    MADftype, maDflen, maDfpow)
+_MA_Df          = MADf*100 - MADf[1]*100
+//MA Diff conditions
+MADfLoID        := _MA_Df >= maDfTre
+MADfSoID        := _MA_Df <= maDfTre * -1
+MADfLong        := maDfuse   == false ? true : MADfLoID
+MADfShort       := maDfuse   == false ? true : MADfSoID
+_SigMADfID      := MADfLoID ? 1 : MADfSoID ? -1 : 0
+_SigMADf        := MADfLong ? 1 : MADfShort ? -1 : 0
+//MA Diff CTRL
+// plot(MADf,          "V_MA.Diff",    MADfLoID        ? green   : MADfSoID         ? red :    gray,       display = dw_Y)
+plot(_Sig_MA_Df == true ? 7 : na, "MA.Filter", _SigMADfID == 1 ? lime100 : _SigMADfID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Chandelier Exit --  Trend confirmation                  --
+//-----------------------------------------------------------------------------{                                                    {Chandelier Exit}
+//////////////////////////////////////////////// CE inputs   ///////////////////////////////////////////////////////////{
+ceuse       = input.bool(false,         "Enable Chandelier Exit",           inline = "CE",          group=CEGp)
+cepr        = input(22,                 "",                                 inline = "CE",          group=CEGp)
+cemult      = input(3,                  "",                                 inline = "CE",          group=CEGp)
+ceuseclos   = input.bool(true,          "",        tooltip = ceuseclT,      inline = "CE",          group=CEGp)
+//}
+//////////////////////////////////////////////// CE Calculations   /////////////////////////////////////////////////////{
+ceATR                   = cemult * ta.atr(cepr)
+//CE Long
+ceLongStop              = (ceuseclos ? ta.highest(close, cepr): ta.highest(cepr)) - ceATR
+ceLongStopPrev          =  nz(ceLongStop[1], ceLongStop)
+ceLongStop              := close[1] > ceLongStopPrev    ? math.max(ceLongStop,ceLongStopPrev)   : ceLongStop
+//CE Short
+ceShortStop             = (ceuseclos ? ta.lowest(close, cepr): ta.lowest(cepr)) + ceATR
+ceShortStopPrev         = nz(ceShortStop[1], ceShortStop)
+ceShortStop             := close[1] < ceShortStopPrev   ? math.min(ceShortStop,ceShortStopPrev) : ceShortStop
+//CE Direction
+var int ceDir           = 1
+ceDir                   := close > ceShortStopPrev ? 1 : close < ceLongStopPrev ? -1 : ceDir
+//}
+//////////////////////////////////////////////// CE Conditions   ///////////////////////////////////////////////////////{
+ceLoID                  := ceDir == 1
+ceSoID                  := ceDir == -1
+ceLong                  := ceuse == false ? true : ceLoID
+ceShort                 := ceuse == false ? true : ceSoID
+_SigceID                := ceLoID ? 1 : ceSoID ? -1 : 0
+_Sigce                  := ceLong ? 1 : ceShort ? -1 : 0
+//}
+//////////////////////////////////////////////// CE CTRL   /////////////////////////////////////////////////////////////{
+// plot(ceLongStop,    "V_CE.LongStop",  ceLoID        ? green   : ceSoID         ? red    : gray,         display = dw_Y)
+// plot(ceShortStop,   "V_CE.ShortStop", ceLoID        ? green   : ceSoID         ? red    : gray,         display = dw_Y)
+plot(_Sig_CE_rng == true ? 8 : na, "CE",      _SigceID == 1 ? lime100 : _SigceID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//}
+//-----------------------------------------------------------------------------}
+// //-----------------------------------------------------------------------------
+// //          RSI             --  Momentum confirmation               --
+// //-----------------------------------------------------------------------------{                                                    {RSI}
+// //////////////////////////////////////////////// RSI inputs   //////////////////////////////////////////////////////////
+// rsiuse      = input.bool(false,         "",                                 inline = "rsi",         group=RsiGp)
+// rsisrc      = input(close,              "",                                 inline = "rsi",         group=RsiGp)        //💡typical price (TP) or the median price (MP)
+// rsipr       = input(14,                 "",                                 inline = "rsi",         group=RsiGp)        //💡test periods 7 and 9
+// rsisellcond = input(70,                 "",                                 inline = "rsi",         group=RsiGp)
+// rsibuycond  = input(30,                 "",                                 inline = "rsi",         group=RsiGp)
+// //////////////////////////////////////////////// RSI calculations and Conditions  //////////////////////////////////////
+// float rsi   = ta.rsi(rsisrc, rsipr)
+// rsiLoID     := rsi <= rsibuycond
+// rsiSoID     := rsi >= rsisellcond
+// rsiLong     := rsiuse    == false ? true : rsiLoID
+// rsiShort    := rsiuse    == false ? true : rsiSoID
+// _SigrsiID   := rsiLoID ? 1 : rsiSoID ? -1 : 0
+// _Sigrsi     := rsiLong ? 1 : rsiShort ? -1 : 0
+// //////////////////////////////////////////////// RSI CTRL  /////////////////////////////////////////////////////////////
+// // plot(rsi,           "V_RSI",    rsiLoID        ? green   : rsiSoID         ? red    : gray,         display = dw_Y)
+// plot(_Sig_RSI == true ? 9 : na, "RSI",   _SigrsiID == 1 ? lime100 : _SigrsiID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+// //-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          VWAP            --  Volume confirmation                 --
+//-----------------------------------------------------------------------------{                                                    {VWAP}
+//////////////////////////////////////////////// VWAP inputs   /////////////////////////////////////////////////////////
+vwapuse     = input.bool(false,     "Enable VWAP",                          inline = "vwap",        group=VwapGp)
+vwapsrc     = input(hlc3,           "             Source",                  inline = "vwap",        group=VwapGp)       //💡median price (MP) or the typical price (TP) 
+vwapAnch    = input.string("1h",    "Anchor",                               inline = "vwap1",       group=VwapGp,
+             options = ["1m", "3m", "5m", "15m", "30m", "1h", "2h","4h", "D"])                                          // 15m or 30m
+stdevMulti  = input.float(1.0,      "Standard Deviation Multiplier",        inline="vwap1",         group=VwapGp)
+vwapancTF   = switch vwapAnch
+    "1m"   => "1"
+    "3m"  => "3"
+    "5m" => "5"
+    "15m" => "15"
+    "30m" => "30"
+    "1h" => "60"
+    "2h" => "120"
+    "4h" => "240"
+    "D" => "1440"
+//////////////////////////////////////////////// VWAP calculations   ///////////////////////////////////////////////////
+anchor                  = timeframe.change(vwapancTF)
+[vwap, upper, lower]    = ta.vwap(vwapsrc, anchor, stdevMulti)
+//////////////////////////////////////////////// VWAP conditions   /////////////////////////////////////////////////////
+vwapLoID                := vwap <= close
+vwapSoID                := vwap >= close
+vwapLong                := vwapuse   ==  false ? true : vwapLoID
+vwapShort               := vwapuse   ==  false ? true : vwapSoID
+_SigvwapID              := vwapLoID ? 1 : vwapSoID ? -1 : 0
+_Sigvwap                := vwapLong ? 1 : vwapShort ? -1 : 0
+//////////////////////////////////////////////// VWAP CTRL   ///////////////////////////////////////////////////////////
+// plot(vwap,          "V_VWAP",   vwapLoID        ? green   : vwapSoID         ? red    : gray,       display = dw_Y)
+plot(_Sig_VWAP == true ? 10 : na, "VWAP",  _SigvwapID == 1 ? lime100 : _SigvwapID == -1 ? red100 : gray100, display = dw_Y, precision = 0)
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          ADX            --  Trend Strength confirmation          --
+//-----------------------------------------------------------------------------{                                                   {ADX}
+// //////////////////////////////////////////////// ADX inputs         ////////////////////////////////////////////////////
+adxthruse   = input.bool(false,     "",                                     inline = "adx",         group = AdxGp)
+adxriseuse  = input.bool(false,     "",                                     inline = "adx",         group = AdxGp)
+len         = input.int(17,         "",                                     inline = "adx",         group = AdxGp)      //💡 9 or 11
+lensig      = input.int(14,         "",                                     inline = "adx",         group = AdxGp)      //💡 try 6
+adxthr      = input.int(20,         "",                                     inline = "adx",         group = AdxGp)      //💡 30 or 35
+//////////////////////////////////////////////// ADX Calculations   ////////////////////////////////////////////////////
+[diplus, diminus, adx]  = ta.dmi(len, lensig)
+float _ADX_Df           = adx - adx[1]
+//////////////////////////////////////////////// ADX Conditions     ////////////////////////////////////////////////////
+//ADX Strong    
+adxStrongID             := adx >= adxthr
+adxStrong               := adxthruse  == false ? true : adxStrongID
+_SigADXstrID            := adxStrongID  ? 1 : 0
+_SigADXstr              := adxStrong    ? 1 : 0
+//
+adxDfID                 := _ADX_Df > 0
+adxDf                   := adxriseuse == false ? true : adxDfID
+_SigADXDfID             := adxDfID  ? 1 : 0
+_SigADXDf               := adxDf    ? 1 : 0
+//////////////////////////////////////////////// ADX CTRL     //////////////////////////////////////////////////////////
+// plot(adx,           "V_ADX",            adxStrongID       ? white : gray,                               display = dw_Y)
+// plot(diplus,        "V_+DI",            adxStrongID       ? white : gray,                               display = dw_Y)
+// plot(diminus,       "V_-DI",            adxStrongID       ? white : gray,                               display = dw_Y)
+plot(_Sig_ADX_thr == true ? 111  : na, "ADX.Strong",    _SigADXstrID == 1 ? blue  : gray100, display = dw_Y, precision = 0)
+plot(_Sig_ADX_Df  == true ? 1111 : na, "ADX.Df",        _SigADXDfID  == 1 ? blue  : gray100, display = dw_Y, precision = 0)
+//-----------------------------------------------------------------------------}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+//§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§       Handeling       §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░{           {Handeling}
+//-----------------------------------------------------------------------------
+//          Handeling VARs  -- Signal, Positition Vars              --
+//-----------------------------------------------------------------------------{                                                    {Handeling Variables}
+var bool _condbuySig1   = false
+var bool _condselSig1   = false
+var bool _condbuySig2   = false
+var bool _condselSig2   = false
+var bool _condbuySig3   = false
+var bool _condselSig3   = false
+var bool _condbuySig4   = false
+var bool _condselSig4   = false
+var bool _condbuySig5   = false
+var bool _condselSig5   = false
+var bool buySignal      = false
+var bool sellSignal     = false
+var bool prevBuySignal  = false
+var bool prevSellSignal = false
+var bool inLong         = false
+var bool inShort        = false
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Handeling CALs  -- Signal, Position calculation         --
+//-----------------------------------------------------------------------------{                                                    {Handeling Variables}
+///////////////////////// Buy/Sell Signal   ////////////////////////////////////////////////////////////////////////////{
+//Bull.Bear + M.T
+_condbuySig1            :=  _bullbar    and TMTFCLong       and TMAltLong   and TMTF1Long   and TMTF2Long
+_condselSig1            :=  _bearbar    and TMTFCShort      and TMAltShort  and TMTF1Short  and TMTF2Short
+//BB Magic + Scalping Line
+_condbuySig2            :=  BBMLong     and BBMAltLong      and SCLTFCLong  and SCLAltLong  and SCLTF1Long
+_condselSig2            :=  BBMShort    and BBMAltShort     and SCLTFCShort and SCLAltShort and SCLTF1Short
+//MA
+_condbuySig3            :=  MAOCCLong   and MAOCCDfLong     and MAfltrLong  and MADfLong    and MACDfLong   and MACcrsLong
+_condselSig3            :=  MAOCCShort  and MAOCCDfShort    and MAfltrShort and MADfShort   and MACDfShort  and MACcrsShort
+//RSI + VWAP + ADX.Threshold + ADX.Diff
+_condbuySig4            :=  rsiLong     and vwapLong        and adxStrong   and adxDf
+_condselSig4            :=  rsiShort    and vwapShort       and adxStrong   and adxDf
+//C.E
+_condbuySig5            :=  ceLong                 
+_condselSig5            :=  ceShort         
+//Buy-Sell Signal
+buySignal               := _condbuySig1      and _condbuySig2    and _condbuySig3   and _condbuySig4    and _condbuySig5
+sellSignal              := _condselSig1      and _condselSig2    and _condselSig3   and _condselSig4    and _condselSig5
+//}
+///////////////////////// Long/Short Calculation   /////////////////////////////////////////////////////////////////////{
+long        = tFltr and longInRange   and buySignal   and not prevBuySignal   and not inLong
+short       = tFltr and shortInRange  and sellSignal  and not prevSellSignal  and not inShort
+if long
+    inLong  := true
+    inShort := false
+if short
+    inLong  := false
+    inShort := true
+prevBuySignal   := buySignal
+prevSellSignal  := sellSignal
+//}
+//-----------------------------------------------------------------------------}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+//§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§        Display        §§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§§
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░{           {All Displays}
+//-----------------------------------------------------------------------------
+//          Color Functions -- Color Cals                           --
+//-----------------------------------------------------------------------------{                                                    {Color Calculation}
+//getcolor Function for Bar Plots
+getBarColor() =>
+    enabledCount = 0
+    longCount = 0
+    shortCount = 0
+    
+    if _bC_BuBe
+        enabledCount    += 1
+        longCount       += bullbarID    == true ? 1 : 0
+        shortCount      += bearbarID    == true ? 1 : 0
+
+    if _bC_TM_TFC
+        enabledCount    += 1
+        longCount       += TMTFCLoID    == true ? 1 : 0
+        shortCount      += TMTFCSoID    == true ? 1 : 0
+
+    if _bC_TM_Alt
+        enabledCount    += 1
+        longCount       += TMAltLoID    == true ? 1 : 0
+        shortCount      += TMAltSoID    == true ? 1 : 0
+    
+    if _bC_TM_TF1
+        enabledCount    += 1
+        longCount       += TMTF1LoID    == true ? 1 : 0
+        shortCount      += TMTF1SoID    == true ? 1 : 0
+    
+    if _bC_TM_TF2
+        enabledCount    += 1
+        longCount       += TMTF2LoID    == true ? 1 : 0
+        shortCount      += TMTF2SoID    == true ? 1 : 0
+    
+    if _bC_BBM
+        enabledCount    += 1
+        longCount       += BBMLoID      == true ? 1 : 0
+        shortCount      += BBMSoID      == true ? 1 : 0
+
+    if _bC_BBM_Alt
+        enabledCount    += 1
+        longCount       += BBMAltLoID   == true ? 1 : 0
+        shortCount      += BBMAltSoID   == true ? 1 : 0
+
+    if _bC_SLC_TFC
+        enabledCount    += 1
+        longCount       += SCLTFCLoID   == true ? 1 : 0
+        shortCount      += SCLTFCSoID   == true ? 1 : 0
+
+    if _bC_SLC_Alt
+        enabledCount    += 1
+        longCount       += SCLAltLoID   == true ? 1 : 0
+        shortCount      += SCLAltSoID   == true ? 1 : 0
+
+    if _bC_SLC_TF1
+        enabledCount    += 1
+        longCount       += SCLTF1LoID   == true ? 1 : 0
+        shortCount      += SCLTF1SoID   == true ? 1 : 0
+    
+    if _bC_MA_OCCrng
+        enabledCount    += 1
+        longCount       += MAOCCLoID    == true ? 1 : 0
+        shortCount      += MAOCCSoID    == true ? 1 : 0
+
+    if _bC_MA_OCCDf
+        enabledCount    += 1
+        longCount       += MAOCCDfLoID  == true ? 1 : 0
+        shortCount      += MAOCCDfSoID  == true ? 1 : 0
+
+    if _bC_CMA_Crs
+        enabledCount    += 1
+        longCount       += MACcrsLoID   == true ? 1 : 0
+        shortCount      += MACcrsSoID   == true ? 1 : 0
+
+    if _bC_CMA_Df
+        enabledCount    += 1
+        longCount       += MACDfLoID    == true ? 1 : 0
+        shortCount      += MACDfSoID    == true ? 1 : 0
+
+    if _bC_MA_fltr
+        enabledCount    += 1
+        longCount       += MAfltrLoID   == true ? 1 : 0
+        shortCount      += MAfltrSoID   == true ? 1 : 0
+    
+    if _bC_MA_Df
+        enabledCount    += 1
+        longCount       += MADfLoID     == true ? 1 : 0
+        shortCount      += MADfSoID     == true ? 1 : 0
+    
+    if _bC_CE_rng
+        enabledCount    += 1
+        longCount       += ceLoID       == true ? 1 : 0
+        shortCount      += ceSoID       == true ? 1 : 0
+
+    if _bC_RSI
+        enabledCount    += 1
+        longCount       += rsiLoID      == true ? 1 : 0
+        shortCount      += rsiSoID      == true ? 1 : 0
+
+    if _bC_VWAP
+        enabledCount    += 1
+        longCount       += vwapLoID     == true ? 1 : 0
+        shortCount      += vwapSoID     == true ? 1 : 0
+
+    if _bC_ADX_thr
+        enabledCount    += 1
+        longCount       += adxStrongID  == true ? 1 : 0
+        shortCount      += adxStrongID  == true ? 1 : 0
+
+    if _bC_ADX_Df
+        enabledCount    += 1
+        longCount       += adxDfID      == true ? 1 : 0
+        shortCount      += adxDfID      == true ? 1 : 0
+    
+    if enabledCount > 0      and longCount   == enabledCount
+        brbullcol
+    else if enabledCount > 0 and shortCount  == enabledCount
+        brbearcol
+    else
+        gray100
+
+_colorBar = getBarColor()
+//getcolor Function for Background Plots
+getBgColor() =>
+    enabledCount = 0
+    longCount = 0
+    shortCount = 0
+    
+    if _bgC_BuBe
+        enabledCount    += 1
+        longCount       += bullbarID    == true ? 1 : 0
+        shortCount      += bearbarID    == true ? 1 : 0
+
+    if _bgC_TM_TFC
+        enabledCount    += 1
+        longCount       += TMTFCLoID    == true ? 1 : 0
+        shortCount      += TMTFCSoID    == true ? 1 : 0
+
+    if _bgC_TM_Alt
+        enabledCount    += 1
+        longCount       += TMAltLoID    == true ? 1 : 0
+        shortCount      += TMAltSoID    == true ? 1 : 0
+
+    if _bgC_TM_TF1
+        enabledCount    += 1
+        longCount       += TMTF1LoID    == true ? 1 : 0
+        shortCount      += TMTF1SoID    == true ? 1 : 0
+    
+    if _bgC_TM_TF2
+        enabledCount    += 1
+        longCount       += TMTF2LoID    == true ? 1 : 0
+        shortCount      += TMTF2SoID    == true ? 1 : 0
+    
+    if _bgC_BBM
+        enabledCount    += 1
+        longCount       += BBMLoID      == true ? 1 : 0
+        shortCount      += BBMSoID      == true ? 1 : 0
+
+    if _bgC_BBM_Alt
+        enabledCount    += 1
+        longCount       += BBMAltLoID   == true ? 1 : 0
+        shortCount      += BBMAltSoID   == true ? 1 : 0
+   
+    if _bgC_SLC_TFC
+        enabledCount    += 1
+        longCount       += SCLTFCLoID   == true ? 1 : 0
+        shortCount      += SCLTFCSoID   == true ? 1 : 0
+
+    if _bgC_SLC_Alt
+        enabledCount    += 1
+        longCount       += SCLAltLoID   == true ? 1 : 0
+        shortCount      += SCLAltSoID   == true ? 1 : 0
+
+    if _bgC_SLC_TF1
+        enabledCount    += 1
+        longCount       += SCLTF1LoID   == true ? 1 : 0
+        shortCount      += SCLTF1SoID   == true ? 1 : 0
+    
+    if _bgC_MA_OCCrng
+        enabledCount    += 1
+        longCount       += MAOCCLoID    == true ? 1 : 0
+        shortCount      += MAOCCSoID    == true ? 1 : 0
+
+    if _bgC_MA_OCCDf
+        enabledCount    += 1
+        longCount       += MAOCCDfLoID  == true ? 1 : 0
+        shortCount      += MAOCCDfSoID  == true ? 1 : 0
+
+    if _bgC_CMA_Crs
+        enabledCount    += 1
+        longCount       += MACcrsLoID   == true ? 1 : 0
+        shortCount      += MACcrsSoID   == true ? 1 : 0
+
+    if _bgC_CMA_Df
+        enabledCount    += 1
+        longCount       += MACDfLoID    == true ? 1 : 0
+        shortCount      += MACDfSoID    == true ? 1 : 0
+
+    if _bgC_MA_fltr
+        enabledCount    += 1
+        longCount       += MAfltrLoID   == true ? 1 : 0
+        shortCount      += MAfltrSoID   == true ? 1 : 0
+    
+    if _bgC_MA_Df
+        enabledCount    += 1
+        longCount       += MADfLoID     == true ? 1 : 0
+        shortCount      += MADfSoID     == true ? 1 : 0
+    
+    if _bgC_CE_rng
+        enabledCount    += 1
+        longCount       += ceLoID       == true ? 1 : 0
+        shortCount      += ceSoID       == true ? 1 : 0
+
+    if _bgC_RSI
+        enabledCount    += 1
+        longCount       += rsiLoID      == true ? 1 : 0
+        shortCount      += rsiSoID      == true ? 1 : 0
+
+    if _bgC_VWAP
+        enabledCount    += 1
+        longCount       += vwapLoID     == true ? 1 : 0
+        shortCount      += vwapSoID     == true ? 1 : 0
+
+    if _bgC_ADX_thr
+        enabledCount    += 1
+        longCount       += adxStrongID  == true ? 1 : 0
+        shortCount      += adxStrongID  == true ? 1 : 0
+
+    if _bgC_ADX_Df
+        enabledCount    += 1
+        longCount       += adxDfID      == true ? 1 : 0
+        shortCount      += adxDfID      == true ? 1 : 0
+    
+    if enabledCount > 0         and longCount   == enabledCount
+        bgbullcol
+    else if enabledCount > 0    and shortCount  == enabledCount
+        bgbearcol
+    else
+        bgNANcol
+
+_colorBg = getBgColor()
+//getcolor Function for Line Plots
+getLineColor() =>
+    enabledCount = 0
+    longCount = 0
+    shortCount = 0
+    
+    if _C_BuBe
+        enabledCount    += 1
+        longCount       += bullbarID    == true ? 1 : 0
+        shortCount      += bearbarID    == true ? 1 : 0
+
+    if _C_TM_TFC
+        enabledCount    += 1
+        longCount       += TMTFCLoID    == true ? 1 : 0
+        shortCount      += TMTFCSoID    == true ? 1 : 0
+
+    if _C_TM_Alt
+        enabledCount    += 1
+        longCount       += TMAltLoID    == true ? 1 : 0
+        shortCount      += TMAltSoID    == true ? 1 : 0
+
+    if _C_TM_TF1
+        enabledCount    += 1
+        longCount       += TMTF1LoID    == true ? 1 : 0
+        shortCount      += TMTF1SoID    == true ? 1 : 0
+    
+    if _C_TM_TF2
+        enabledCount    += 1
+        longCount       += TMTF2LoID    == true ? 1 : 0
+        shortCount      += TMTF2SoID    == true ? 1 : 0
+    
+    if _C_BBM
+        enabledCount    += 1
+        longCount       += BBMLoID      == true ? 1 : 0
+        shortCount      += BBMSoID      == true ? 1 : 0
+
+    if _C_BBM_Alt
+        enabledCount    += 1
+        longCount       += BBMAltLoID   == true ? 1 : 0
+        shortCount      += BBMAltSoID   == true ? 1 : 0
+
+    if _C_SLC_TFC
+        enabledCount    += 1
+        longCount       += SCLTFCLoID   == true ? 1 : 0
+        shortCount      += SCLTFCSoID   == true ? 1 : 0
+
+    if _C_SLC_Alt
+        enabledCount    += 1
+        longCount       += SCLAltLoID   == true ? 1 : 0
+        shortCount      += SCLAltSoID   == true ? 1 : 0
+
+    if _C_SLC_TF1
+        enabledCount    += 1
+        longCount       += SCLTF1LoID   == true ? 1 : 0
+        shortCount      += SCLTF1SoID   == true ? 1 : 0
+    
+    if _C_MA_OCCrng
+        enabledCount    += 1
+        longCount       += MAOCCLoID    == true ? 1 : 0
+        shortCount      += MAOCCSoID    == true ? 1 : 0
+
+    if _C_MA_OCCDf
+        enabledCount    += 1
+        longCount       += MAOCCDfLoID  == true ? 1 : 0
+        shortCount      += MAOCCDfSoID  == true ? 1 : 0
+
+    if _C_CMA_Crs
+        enabledCount    += 1
+        longCount       += MACcrsLoID   == true ? 1 : 0
+        shortCount      += MACcrsSoID   == true ? 1 : 0
+
+    if _C_CMA_Df
+        enabledCount    += 1
+        longCount       += MACDfLoID    == true ? 1 : 0
+        shortCount      += MACDfSoID    == true ? 1 : 0
+
+    if _C_MA_fltr
+        enabledCount    += 1
+        longCount       += MAfltrLoID   == true ? 1 : 0
+        shortCount      += MAfltrSoID   == true ? 1 : 0
+    
+    if _C_MA_Df
+        enabledCount    += 1
+        longCount       += MADfLoID     == true ? 1 : 0
+        shortCount      += MADfSoID     == true ? 1 : 0
+    
+    if _C_CE_rng
+        enabledCount    += 1
+        longCount       += ceLoID       == true ? 1 : 0
+        shortCount      += ceSoID       == true ? 1 : 0
+
+    if _C_RSI
+        enabledCount    += 1
+        longCount       += rsiLoID      == true ? 1 : 0
+        shortCount      += rsiSoID      == true ? 1 : 0
+
+    if _C_VWAP
+        enabledCount    += 1
+        longCount       += vwapLoID     == true ? 1 : 0
+        shortCount      += vwapSoID     == true ? 1 : 0
+
+    if _C_ADX_thr
+        enabledCount    += 1
+        longCount       += adxStrongID  == true ? 1 : 0
+        shortCount      += adxStrongID  == true ? 1 : 0
+
+    if _C_ADX_Df
+        enabledCount    += 1
+        longCount       += adxDfID      == true ? 1 : 0
+        shortCount      += adxDfID      == true ? 1 : 0
+    
+    if enabledCount > 0         and longCount   == enabledCount
+        lnbullcol
+    else if enabledCount > 0    and shortCount  == enabledCount
+        lnbearcol
+    else
+        gray100
+
+_colorLine = getLineColor()
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Handeling       -- Signal, Postion display              --
+//-----------------------------------------------------------------------------{                                                    {Signal}
+///////////////////////// Signal Plot   ////////////////////////////////////////////////////////////////////////////////{
+plotshape(_dBS == true ? long : na, "Buy",  style=shape.triangleup,   location=location.belowbar, color = bullcol, size = size.small, force_overlay = true)
+plotshape(_dBS == true ? short: na, "Sell", style=shape.triangledown, location=location.abovebar, color = bearcol, size = size.small, force_overlay = true)
+//}
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Bar Plot        --  Bar Plots                           --
+//-----------------------------------------------------------------------------{                                                    {Bar Color}
+barcolor(brcoluse== true ? _colorBar : na)
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Background Plot --  Background Plots                    --
+//-----------------------------------------------------------------------------{                                                    {Background Color}
+//Background Signal Plot
+bgcolor(bgcoluse== true ? _colorBg : na,                                        force_overlay = true)
+// //Background Range Plot
+// //Long Range background
+// rLoP1p  = plot(rLouse==true?rLoP1:na,   "Long Range Start",     color=green,    force_overlay = true,   display=dw_Y)
+// rLoP2p  = plot(rLouse==true?rLoP2:na,   "Long Range End",       color=green,    force_overlay = true,   display=dw_Y)
+// rLoCol = color.new(lime100,97)
+// fill(rLoP1p,rLoP2p,             title=  "Long Range",           color=rLoCol)
+// //Short Range background
+// rSoP1p  = plot(rSouse==true?rSoP1:na,   "Short Range Start",    color=red,      force_overlay = true,   display=dw_Y)
+// rSoP2p  = plot(rSouse==true?rSoP2:na,   "Short Range End",      color=red,      force_overlay = true,   display=dw_Y)
+// rSoCol = color.new(red100,97)
+// fill(rSoP1p,rSoP2p,             title=  "Short Range",          color=rSoCol)
+//-----------------------------------------------------------------------------}
+//-----------------------------------------------------------------------------
+//          Line Plots      -- T.M, MAs, VWAP                       --
+//-----------------------------------------------------------------------------{                                                    {Line Plots}
+//Trend Magic Plot
+plot(TMTFCP  == true ? TMTFC   : na,               "TM_TFC",                linewidth = 2, force_overlay = true, display = dw_N,
+     color = TMtfccuscol ?   _colorLine : (_SigTMTFCID == 1 ? TMtfcbullcol : _SigTMTFCID == -1 ? TMtfcbearcol :  gray100))
+//BB Magic Plot
+plot(BBMP    == true ? bb_magic     : na,               "BB Magic",         linewidth = 2, force_overlay = true, display = dw_N,
+     color = bbmcuscol   ?   _colorLine : (_SigBBMID       == 1 ? bbmbullcol   : _SigBBMID   == -1 ? bbmbearcol :    gray100))
+//MA Plots
+//MA OCC Plot
+maClosSerRsP = plot(MAOCCP == true ? maClosSerRs : na,  "MA - OCC - Close", linewidth = 2, force_overlay = true, display = dw_N,
+     color = MAOCCcuscol ?   _colorLine : (_SigMAOCCID == 1  ? MAOCCbullcol : _SigMAOCCID == -1 ? MAOCCbearcol : gray100))
+maOpenSerRsP = plot(MAOCCP == true ? maOpenSerRs : na,  "MA - OCC - Open",  linewidth = 2, force_overlay = true, display = dw_N,
+     color = MAOCCcuscol ?   _colorLine : (_SigMAOCCID == 1  ? MAOCCbullcol : _SigMAOCCID == -1 ? MAOCCbearcol : gray100))
+fill(maClosSerRsP, maOpenSerRsP ,               title = "MA - OCC - Fill ", 
+     color = MAOCCcuscol ?   _colorLine : (_SigMAOCCID == 1  ? MAOCCbullcol : _SigMAOCCID == -1 ? MAOCCbearcol : gray100))
+//MA Corrected Plot
+plot(MACOP  == true ? cma   : na,                       "MA Corrected",     linewidth = 2, force_overlay = true, display = dw_N,
+     color = MACOcuscol ?   _colorLine : (_SigMACDfID == 1 ? MACObullcol : _SigMACDfID == -1 ? MACObearcol :  gray100))
+// //MA Filter Plot
+// plot(MAfltrP  == true ? MAfltr   : na,                  "MA Filter",        linewidth = 2, force_overlay = true, display = dw_N,
+//      color = MAfltrcuscol ?   _colorLine : (_SigMAfltrID == 1 ? MAfltrbullcol : _SigMAfltrID == -1 ? MAfltrbearcol :  gray100))
+// //MA Df Plot
+// plot(MADfP  == true ? MADf   : na,                  "MA Df",                linewidth = 2, force_overlay = true, display = dw_N,
+//      color = MADfcuscol ?   _colorLine : (_SigMADfID == 1 ? MADfbullcol : _SigMADfID == -1 ? MADfbearcol :  gray100))
+//Chandelier Exit Plot
+plot(ceP==true?(ceLoID?ceLongStop:ceSoID?ceShortStop:na):na,"CE - Stop",    linewidth = 2, force_overlay = true, display = dw_N,
+     color = cecuscol ?   _colorLine : (_SigceID == 1 ? cebullcol : _SigceID == -1 ? cebearcol :  gray100))
+//VWAP Plot
+plot(VWAPP  == true ? vwap   : na,                      "VWAP",             linewidth = 2, force_overlay = true, display = dw_N,
+     color = vwapcuscol ?   _colorLine : (_SigvwapID == 1 ? vwapbullcol : _SigvwapID == -1 ? vwapbearcol :  gray100))
+//-----------------------------------------------------------------------------}
+//░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░}
+//Active Signal CTRL{
+// //Bull-Bear
+// plot(_SigBuBe,   "Bull.Bear", _SigBuBe   == 1 ? lime100 : _SigBuBe    == -1 ? red100 : gray100,  display = dw_Y)
+// //Trend Magic
+// plot(_SigTMTFC,  "TM.TFC",    _SigTMTFC  == 1 ? lime100 : _SigTMTFC   == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigTMAlt,  "TM.Alt",    _SigTMAlt  == 1 ? lime100 : _SigTMAlt   == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigTMTF1,  "TM.TF1",    _SigTMTF1  == 1 ? lime100 : _SigTMTF1   == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigTMTF2,  "TM.TF2",    _SigTMTF2  == 1 ? lime100 : _SigTMTF2   == -1 ? red100 : gray100,  display = dw_Y)
+// //BB Magic
+// plot(_SigBBM,    "BBM",       _SigBBM    == 1 ? lime100 : _SigBBM     == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigBBMAlt, "BBM_Alt",   _SigBBMAlt == 1 ? lime100 : _SigBBMAlt  == -1 ? red100 : gray100,  display = dw_Y)
+// //Scalping Line
+// plot(_SigSCLTFC, "SCL.TFC",  _SigSCLTFC  == 1 ? lime100 : _SigSCLTFC  == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigSCLAlt, "SCL.TFC",  _SigSCLAlt  == 1 ? lime100 : _SigSCLAlt  == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigSCLTF1, "SCL.TF1",  _SigSCLTF1  == 1 ? lime100 : _SigSCLTF1  == -1 ? red100 : gray100,  display = dw_Y)
+// //MA
+// plot(_SigMAOCC,  "OCC",      _SigMAOCC   == 1 ? lime100 : _SigMAOCC   == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigMACcrs, "CMA.Cross",_SigMACcrs  == 1 ? lime100 : _SigMACcrs  == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigMACDfID,"CMA.Df",   _SigMACDfID == 1 ? lime100 : _SigMACDfID == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigMAfltr, "MA.Filter",_SigMAfltr  == 1 ? lime100 : _SigMAfltr  == -1 ? red100 : gray100,  display = dw_Y)
+// plot(_SigMADf,   "MA.Diff",  _SigMADf    == 1 ? lime100 : _SigMADf    == -1 ? red100 : gray100,  display = dw_Y)
+// //Chandelier Exit
+// plot(_Sigce,     "CE",       _Sigce      == 1 ? lime100 : _Sigce      == -1 ? red100 : gray100,  display = dw_Y)
+// //RSI
+// plot(_Sigrsi,    "RSI",      _Sigrsi     == 1 ? lime100 : _Sigrsi     == -1 ? red100 : gray100,  display = dw_Y)
+// //VWAP
+// plot(_Sigvwap,   "VWAP",     _Sigvwap    == 1 ? lime100 : _Sigvwap    == -1 ? red100 : gray100,  display = dw_Y)
+// //ADX
+// plot(_SigADXstr, "ADX.Strong",_SigADXstr == 1 ? blue    : gray100,                               display = dw_Y)
+// plot(_SigADXDf,  "ADX.Df",   _SigADXDf   == 1 ? blue    : gray100,                               display = dw_Y)
+//}
